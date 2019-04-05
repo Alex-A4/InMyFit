@@ -5,7 +5,7 @@ import 'package:inmyfit/src/app.dart';
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.dark,
   ));
   runApp(MaterialApp(
