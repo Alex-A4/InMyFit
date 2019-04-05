@@ -94,8 +94,9 @@ class _AppState extends State<App> {
       ),
       child: BottomNavigationBar(
         items: _items,
-        iconSize: 30.0,
+        iconSize: 25.0,
         currentIndex: barIndex,
+        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           barIndex = index;
           bloc.dispatch(_events[index]);
