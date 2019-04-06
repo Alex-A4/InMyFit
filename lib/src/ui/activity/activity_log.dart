@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
+import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/controller/watertip_controller.dart';
 
 class ActivityLog extends StatefulWidget {
@@ -28,6 +29,8 @@ class _ActivityLogState extends State<ActivityLog> {
           children: <Widget>[
             getCalendar(),
             getWaterTip(),
+            getWaterReminder(),
+            SizedBox(height: 20.0),
           ],
         ),
       ),
@@ -61,7 +64,7 @@ class _ActivityLogState extends State<ActivityLog> {
     );
   }
 
-  //Return the tip about water
+  //Get the tip about water
   Widget getWaterTip() {
     return Container(
       height: 175.0,
@@ -110,6 +113,109 @@ class _ActivityLogState extends State<ActivityLog> {
             setState(() => _currentTip = _waterTipController.getNextTip()),
       ),
     );
+  }
+
+  //Get the reminder about filled water
+  Widget getWaterReminder() {
+    var textStyleTurq = TextStyle(fontSize: 25.0, color: theme.primaryColor);
+    var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54);
+    var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400]);
+    var textStyleFilled = TextStyle(fontSize: 16.0, color: Colors.black45);
+
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            fit: StackFit.loose,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.only(top: 4.0),
+                alignment: AlignmentDirectional.center,
+                child: Text('Напоминание о воде', style: textStyleTurq),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 4.0, right: 16.0),
+                alignment: AlignmentDirectional.centerEnd,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(40.0),
+                  child: Container(
+                    width: 30.0,
+                    height: 30.0,
+                    child: Image.asset(
+                      'assets/activity_water/settings.png',
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.0),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text('заполнено', style: textStyle1),
+                  SizedBox(height: 4.0),
+                  Text('40%', style: textStyleTurq),
+                  SizedBox(height: 4.0),
+                  Text('800 мл', style: textStyle2),
+                ],
+              ),
+              Container(
+                child: Image.asset('assets/activity_water/people.png'),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text('цель', style: textStyle1),
+                  SizedBox(height: 4.0),
+                  Text('2000 мл', style: textStyleTurq),
+                  SizedBox(height: 4.0),
+                  Text('10 стаканов', style: textStyle2),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 20.0),
+          Container(
+            alignment: AlignmentDirectional.center,
+            child:
+                Text('посмотрите выпитые стаканы ниже', style: textStyleFilled),
+          ),
+          GridView(
+              shrinkWrap: true,
+              primary: false,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  childAspectRatio: 1.3,
+                  crossAxisSpacing: 0.0,
+                  mainAxisSpacing: 25.0),
+              children: [
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ].map((filled) => getGlassImage(filled)).toList()),
+        ],
+      ),
+    );
+  }
+
+  ///Get the image with glass (filled or not based on [filled])
+  Widget getGlassImage(bool filled) {
+    return Image.asset(
+        'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png');
   }
 
   final Color _tipColor = Color(0xFF4EEBE4);
