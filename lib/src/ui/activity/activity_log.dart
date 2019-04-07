@@ -132,7 +132,7 @@ class _ActivityLogState extends State<ActivityLog> {
               Container(
                 padding: const EdgeInsets.only(top: 4.0),
                 alignment: AlignmentDirectional.center,
-                child: Text('Напоминание о воде', style: textStyleTurq),
+                child: Text('Приём воды', style: textStyleTurq),
               ),
               Container(
                 padding: const EdgeInsets.only(top: 4.0, right: 16.0),
