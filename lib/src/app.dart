@@ -30,7 +30,6 @@ class _AppState extends State<App> {
 
   int barIndex = 0;
 
-  //TODO: test to increase size of text to disable changing it by selecting
   //List of bottom bar items
   List<MyFitAppBarItem> _items = [
     MyFitAppBarItem(
