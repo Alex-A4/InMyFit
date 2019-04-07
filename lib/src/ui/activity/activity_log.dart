@@ -25,12 +25,16 @@ class _ActivityLogState extends State<ActivityLog> {
     return Scaffold(
       body: Container(
         child: ListView(
+          cacheExtent: 10.0,
+          key: Key('ActivityLogListView'),
           padding: EdgeInsets.only(top: 8.0),
           children: <Widget>[
             getCalendar(),
             getWaterTip(),
             getWaterReminder(),
-            SizedBox(height: 20.0),
+            getSpacer(),
+            getTabletsSchedule(),
+            getMotivatorAndCourse(),
           ],
         ),
       ),
@@ -40,6 +44,7 @@ class _ActivityLogState extends State<ActivityLog> {
   //Get calendar that display at the top of list
   Widget getCalendar() {
     return Container(
+      key: Key('CalendarKey'),
       height: 120.0,
       child: CalendarCarousel(
         weekFormat: true,
@@ -67,6 +72,7 @@ class _ActivityLogState extends State<ActivityLog> {
   //Get the tip about water
   Widget getWaterTip() {
     return Container(
+      key: Key('WaterTipKey'),
       height: 175.0,
       padding: const EdgeInsets.all(16.0),
       child: InkWell(
@@ -117,12 +123,13 @@ class _ActivityLogState extends State<ActivityLog> {
 
   //Get the reminder about filled water
   Widget getWaterReminder() {
-    var textStyleTurq = TextStyle(fontSize: 27.0, color: theme.primaryColor);
+    var textStyleTurq = TextStyle(fontSize: 25.0, color: theme.primaryColor);
     var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54);
     var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400]);
     var textStyleFilled = TextStyle(fontSize: 16.0, color: Colors.black45);
 
     return Container(
+      key: Key('WaterReminderKey'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -219,7 +226,6 @@ class _ActivityLogState extends State<ActivityLog> {
               primary: false,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 5,
-                  childAspectRatio: 1.3,
                   crossAxisSpacing: 0.0,
                   mainAxisSpacing: 25.0),
               children: [
@@ -239,12 +245,119 @@ class _ActivityLogState extends State<ActivityLog> {
     );
   }
 
+  Widget getSpacer() {
+    return Container(
+      height: 65.0,
+      child: Image.asset(
+        'assets/watertips/watertip1.png',
+        height: 65.0,
+        width: double.infinity,
+        fit: BoxFit.fill,
+      ),
+    );
+  }
+
   ///Get the image with glass (filled or not based on [filled])
   Widget getGlassImage(bool filled) {
     return GestureDetector(
-      onTap: (){},
+      onTap: () {},
       child: Image.asset(
           'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png'),
+    );
+  }
+
+  //Get the widget with with tablets schedule
+  Widget getTabletsSchedule() {
+    var textStyleRed = TextStyle(color: Colors.red[300], fontSize: 25.0);
+
+    return Container(
+      key: Key('TabletsSchedule'),
+      padding: const EdgeInsets.only(top: 8.0),
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            fit: StackFit.loose,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.only(top: 4.0),
+                alignment: AlignmentDirectional.center,
+                child: Text('Приём таблеток', style: textStyleRed),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 4.0, right: 16.0),
+                alignment: AlignmentDirectional.centerEnd,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(40.0),
+                  child: Container(
+                    width: 30.0,
+                    height: 30.0,
+                    child: Image.asset(
+                      'assets/activity_water/settings.png',
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.0),
+
+          //TODO: use expandable widgets for tablets
+        ],
+      ),
+    );
+  }
+
+  //Return the widget with motivator and button to buy course
+  Widget getMotivatorAndCourse() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          getMotivatorTip(),
+          SizedBox(height: 10.0,),
+          getBuyCourseButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget getBuyCourseButton() {
+    return RaisedButton(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: theme.primaryColor,
+      onPressed: () {},
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.shopping_cart, color: Colors.white, size: 25.0),
+          Text('купить курс',
+              style: TextStyle(fontSize: 19.0, color: Colors.white)),
+        ],
+      ),
+    );
+  }
+
+  Widget getMotivatorTip() {
+    return Container(
+      width: double.infinity,
+      height: 120.0,
+      padding: const EdgeInsets.all(16.0),
+      decoration: ShapeDecoration(
+          color: Colors.red[300],
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0))),
+      child: Container(
+        child: Text(
+          'motivator',
+          style: TextStyle(
+              fontSize: 20.0, fontWeight: FontWeight.w700, color: Colors.white),
+        ),
+      ),
     );
   }
 
