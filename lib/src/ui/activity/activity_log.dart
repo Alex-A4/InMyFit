@@ -117,7 +117,7 @@ class _ActivityLogState extends State<ActivityLog> {
 
   //Get the reminder about filled water
   Widget getWaterReminder() {
-    var textStyleTurq = TextStyle(fontSize: 25.0, color: theme.primaryColor);
+    var textStyleTurq = TextStyle(fontSize: 27.0, color: theme.primaryColor);
     var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54);
     var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400]);
     var textStyleFilled = TextStyle(fontSize: 16.0, color: Colors.black45);
@@ -160,10 +160,21 @@ class _ActivityLogState extends State<ActivityLog> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('заполнено', style: textStyle1),
-                  SizedBox(height: 4.0),
-                  Text('40%', style: textStyleTurq),
-                  SizedBox(height: 4.0),
-                  Text('800 мл', style: textStyle2),
+                  Row(
+                    children: <Widget>[
+                      Text('40', style: textStyleTurq),
+                      Text('%', style: textStyleTurq.copyWith(fontSize: 18)),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text('800', style: textStyle2),
+                      Text(
+                        ' мл',
+                        style: textStyle2.copyWith(fontSize: 15.0),
+                      )
+                    ],
+                  ),
                 ],
               ),
               Container(
@@ -173,10 +184,24 @@ class _ActivityLogState extends State<ActivityLog> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('цель', style: textStyle1),
-                  SizedBox(height: 4.0),
-                  Text('2000 мл', style: textStyleTurq),
-                  SizedBox(height: 4.0),
-                  Text('10 стаканов', style: textStyle2),
+                  Row(
+                    children: <Widget>[
+                      Text('2000', style: textStyleTurq),
+                      Text(
+                        ' мл',
+                        style: textStyleTurq.copyWith(fontSize: 18.0),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text('10', style: textStyle2),
+                      Text(
+                        ' стаканов',
+                        style: textStyle2.copyWith(fontSize: 15.0),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -187,7 +212,9 @@ class _ActivityLogState extends State<ActivityLog> {
             child:
                 Text('посмотрите выпитые стаканы ниже', style: textStyleFilled),
           ),
+          SizedBox(height: 20.0),
           GridView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               shrinkWrap: true,
               primary: false,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -214,8 +241,11 @@ class _ActivityLogState extends State<ActivityLog> {
 
   ///Get the image with glass (filled or not based on [filled])
   Widget getGlassImage(bool filled) {
-    return Image.asset(
-        'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png');
+    return GestureDetector(
+      onTap: (){},
+      child: Image.asset(
+          'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png'),
+    );
   }
 
   final Color _tipColor = Color(0xFF4EEBE4);
