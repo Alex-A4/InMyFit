@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Controller that describes water tips.
 /// That contains list of tips and method to get next tip
 class WaterTipController {
@@ -24,8 +26,10 @@ class WaterTipController {
     return _tips[++currentTipIndex % 6];
   }
 
+  //Get the random tip from 0 to 5 inclusive both
   WaterTip getFirstTip() {
-    return _tips[0];
+    currentTipIndex = Random().nextInt(6);
+    return _tips[currentTipIndex];
   }
 }
 
