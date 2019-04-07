@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/bloc/menu/menu.dart';
+import 'package:inmyfit/src/custom_bottom_bar.dart';
 import 'package:inmyfit/src/ui/activity/activity_log.dart';
 import 'package:inmyfit/src/ui/guides/guides_main.dart';
 import 'package:inmyfit/src/ui/myfit/myfit_main.dart';
@@ -29,30 +30,30 @@ class _AppState extends State<App> {
 
   int barIndex = 0;
 
+  //TODO: test to increase size of text to disable changing it by selecting
   //List of bottom bar items
-  List<BottomNavigationBarItem> _items = [
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/bottomBar/activity.png')),
-      title: Text('ActivityLog'),
+  List<MyFitAppBarItem> _items = [
+    MyFitAppBarItem(
+      icon: 'assets/bottomBar/activity.png',
+      title: 'ActivityLog',
     ),
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/bottomBar/guide.png')),
-      title: Text('Guides'),
+    MyFitAppBarItem(
+      icon: 'assets/bottomBar/guide.png',
+      title: 'Guides',
     ),
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/bottomBar/myfit.png')),
-      title: Text('MyFit'),
+    MyFitAppBarItem(
+      icon: 'assets/bottomBar/myfit.png',
+      title: 'MyFit',
     ),
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/bottomBar/shop.png')),
-      title: Text('Shop'),
+    MyFitAppBarItem(
+      icon: 'assets/bottomBar/shop.png',
+      title: 'Shop',
     ),
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/bottomBar/profile.png')),
-      title: Text('Profile'),
+    MyFitAppBarItem(
+      icon: 'assets/bottomBar/profile.png',
+      title: 'Profile',
     ),
   ];
-
 
   @override
   void initState() {
@@ -86,22 +87,17 @@ class _AppState extends State<App> {
 
   //Get the BottomBar widget
   Widget getBottomBar() {
-    return Theme(
-      data: ThemeData(
-        canvasColor: Colors.grey[600],
-        primaryColor: theme.primaryColor,
-        textTheme: TextTheme(caption: TextStyle(color: Colors.white)),
-      ),
-      child: BottomNavigationBar(
-        items: _items,
-        iconSize: 25.0,
-        currentIndex: barIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          barIndex = index;
-          bloc.dispatch(_events[index]);
-        },
-      ),
+    return MyFitAppBar(
+      items: _items,
+      iconSize: 25.0,
+      height: 60.0,
+      backgroundColor: Colors.grey[600],
+      inactiveIconColor: Colors.white,
+      activeIconColor: theme.primaryColor,
+      onTabSelected: (index) {
+        barIndex = index;
+        bloc.dispatch(_events[index]);
+      },
     );
   }
 
@@ -111,16 +107,11 @@ class _AppState extends State<App> {
 
     if (state is StateMenuStarted)
       body = Center(child: CircularProgressIndicator());
-    if (state is StateActivityLog)
-      body = ActivityLog();
-    if (state is StateMyFit)
-      body = MyFit();
-    if (state is StateGuides)
-      body = Guides();
-    if (state is StateProfile)
-      body = Profile();
-    if (state is StateShop)
-      body = Shop();
+    if (state is StateActivityLog) body = ActivityLog();
+    if (state is StateMyFit) body = MyFit();
+    if (state is StateGuides) body = Guides();
+    if (state is StateProfile) body = Profile();
+    if (state is StateShop) body = Shop();
 
     return body;
   }
