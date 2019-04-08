@@ -1,0 +1,184 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:inmyfit/main.dart';
+import 'package:inmyfit/src/models/water_intake.dart';
+import 'package:inmyfit/src/redux/activity_redux.dart';
+import 'package:redux/redux.dart';
+
+class WaterReminder extends StatelessWidget {
+  Store<ActivityState> _store;
+
+  ///For UI filled vessels will displays like bool list and for controller
+  /// it's count of filled vessels
+  List<bool> filledVessels;
+
+  WaterReminder({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<ActivityState, ValueChanged<bool>>(
+      converter: (store) {
+        print('REMINDER CONVERTER');
+        _store = store;
+
+        int filledCount =
+            store.state.dayActivityController.waterIntake.completed;
+        int goal = store.state.dayActivityController.waterIntake.goalToIntake;
+
+        /// Generate list of fill/empty vessels.
+        /// Example: [filledCount] = 3 and [goal] = 5, then it generates
+        /// list [true, true, true, false, false]
+        /// TODO: check is that works when count of vessels changes
+        filledVessels =
+            List.generate(goal, (index) => index < filledCount ? true : false);
+
+        /// If [isFilled] true then increase count else decrease
+        return (isFilled) =>
+            store.dispatch(ChangeCompletedWaterAction(isFilled));
+      },
+      builder: (context, changer) {
+        WaterIntake water = _store.state.dayActivityController.waterIntake;
+        WaterIntakeType type = water.type;
+        print(water.toJSON());
+        //If it's glasses then 200ml else 500ml
+        int mlInOneIntake = type == WaterIntakeType.Glasses ? 200 : 500;
+        int goal = mlInOneIntake * water.goalToIntake;
+        int completed = mlInOneIntake * water.completed;
+        int percent = (completed / goal.toDouble() * 100).toInt();
+
+        return Container(
+          key: Key('WaterReminderKey'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Stack(
+                fit: StackFit.loose,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    alignment: AlignmentDirectional.center,
+                    child: Text('Приём воды', style: textStyleTurq),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(top: 4.0, right: 16.0),
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(40.0),
+                      child: Container(
+                        width: 30.0,
+                        height: 30.0,
+                        child: Image.asset(
+                          'assets/activity_water/settings.png',
+                        ),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.0),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text('заполнено', style: textStyle1),
+                      Row(
+                        children: <Widget>[
+                          Text('$percent', style: textStyleTurq),
+                          Text('%',
+                              style: textStyleTurq.copyWith(fontSize: 18)),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text('$completed', style: textStyle2),
+                          Text(
+                            ' мл',
+                            style: textStyle2.copyWith(fontSize: 15.0),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    child: Image.asset('assets/activity_water/people.png'),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text('цель', style: textStyle1),
+                      Row(
+                        children: <Widget>[
+                          Text('$goal', style: textStyleTurq),
+                          Text(
+                            ' мл',
+                            style: textStyleTurq.copyWith(fontSize: 18.0),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text('${water.goalToIntake} ', style: textStyle2),
+                          Text(
+                            type == WaterIntakeType.Glasses
+                                ? 'стаканов'
+                                : 'бутылок',
+                            style: textStyle2.copyWith(fontSize: 15.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Container(
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                    'посмотрите выпитые ${type == WaterIntakeType.Glasses ? 'стаканы' : 'бутылки'} ниже',
+                    style: textStyleFilled),
+              ),
+              SizedBox(height: 20.0),
+              GridView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                shrinkWrap: true,
+                primary: false,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  mainAxisSpacing: 25.0,
+                ),
+                children: filledVessels
+                    .asMap()
+                    .keys
+                    .map((index) => getGlassImage(changer, index))
+                    .toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  ///Get the image with glass (filled or not based on [filled])
+  Widget getGlassImage(ValueChanged<bool> changer, int index) {
+    bool filled = filledVessels[index];
+    return GestureDetector(
+      onTap: () {
+        //Inverse bottle
+        filledVessels[index] = !filledVessels[index];
+        changer(filledVessels[index]);
+      },
+      child: Image.asset(
+          'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png'),
+    );
+  }
+
+  var textStyleTurq = TextStyle(fontSize: 25.0, color: theme.primaryColor);
+  var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54);
+  var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400]);
+  var textStyleFilled = TextStyle(fontSize: 16.0, color: Colors.black45);
+}
