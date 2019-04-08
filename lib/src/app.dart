@@ -106,7 +106,7 @@ class _AppState extends State<App> {
 
     if (state is StateMenuStarted)
       body = Center(child: CircularProgressIndicator());
-    if (state is StateActivityLog) body = ActivityLog();
+    if (state is StateActivityLog) body = ActivityLog(store: state.store);
     if (state is StateMyFit) body = MyFit();
     if (state is StateGuides) body = Guides();
     if (state is StateProfile) body = Profile();
