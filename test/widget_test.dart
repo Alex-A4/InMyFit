@@ -1,30 +1,22 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:inmyfit/main.dart';
+import 'package:inmyfit/src/models/tablet_intake.dart';
+import 'package:inmyfit/src/models/water_intake.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  testWaterAndTabletIntakesConverting();
+}
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+void testWaterAndTabletIntakesConverting() {
+  //Test water
+  WaterIntake water = WaterIntake(
+      goalToIntake: 10, type: WaterIntakeType.Glasses, completed: 5);
+  var json = water.toJSON();
+  print(json);
+  water = WaterIntake.fromJSON(json);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
+  //Test tablets
+  TabletsIntake tablets = TabletsIntake(
+      completed: 1, countOfIntakes: 3, name: 'Penicilin', dosage: 1);
+  json = tablets.toJSON();
+  print(json);
+  tablets = TabletsIntake.fromJSON(json);
 }
