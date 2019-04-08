@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:redux/redux.dart';
 
 abstract class MenuState extends Equatable {}
 
@@ -8,8 +9,13 @@ class StateMenuStarted extends MenuState {
   String toString() => 'StateMenuStarted';
 }
 
-//ActivityLog state
+/// ActivityLog state
+/// Contains store from for fast access to that
 class StateActivityLog extends MenuState {
+  final Store store;
+
+  StateActivityLog(this.store);
+
   @override
   String toString() => 'StateActivityLog';
 }
