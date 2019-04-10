@@ -14,17 +14,22 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   @override
   Stream<MenuState> mapEventToState(MenuEvent event) async* {
     if (event is EventMenuStarted) {
-      //TODO: load info
-      //TODO: there must be initialized repositories for all menu elements
+      var date = DayActivityController.getPrimitiveDate(DateTime.now());
 
       ///Initialize controllers for ActivityRedux
       var currentController =
           await CurrentActivityController.restoreFromCache();
+      var intakes = await readDayIntakes(date);
+      var dayController = DayActivityController(
+        date,
+        tablets: intakes[0],
+        water: intakes[1],
+      );
 
       activityStore = Store<ActivityState>(
         activityReducer,
         initialState: ActivityState(
-          dayActivityController: DayActivityController(DateTime.now()),
+          dayActivityController: dayController,
           currentActivityController: currentController,
         ),
         middleware: [fetchActionMiddleware],
