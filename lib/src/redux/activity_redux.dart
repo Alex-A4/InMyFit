@@ -1,3 +1,4 @@
+import 'package:inmyfit/src/database/intake_db_provider.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
 
 import '../controller/day_activity_controller.dart';
@@ -41,8 +42,9 @@ class FetchDataSuccessAction {
 /// If [isFilled] true then increase count else decrease
 class ChangeCompletedWaterAction {
   final bool isFilled;
+  final WaterIntake water;
 
-  ChangeCompletedWaterAction(this.isFilled);
+  ChangeCompletedWaterAction({this.isFilled, this.water});
 }
 
 /// Redux reducer to communicate between UI and store
@@ -63,46 +65,72 @@ ActivityState activityReducer(ActivityState state, action) {
     );
 
   if (action is ChangeCompletedWaterAction) {
-    DayActivityController prev = state.dayActivityController;
-
-    //If 'prev' date before current then do not change
-    if (prev.compareDate(DateTime.now()) >= 0)
-      return ActivityState(
-        currentActivityController: state.currentActivityController,
-        dayActivityController: DayActivityController(
-          //Copy date and tablets
-          prev.todaysDate,
-          tablets: prev.tabletsIntake,
-
-          /// Update WaterIntake: if isFilled then increase else decrease
-          water: WaterIntake(
-            goalToIntake: prev.waterIntake.goalToIntake,
-            type: prev.waterIntake.type,
-            completed: action.isFilled
-                ? prev.waterIntake.completed + 1
-                : prev.waterIntake.completed - 1,
-          ),
-        ),
-      );
+    return ActivityState(
+      isFetching: false,
+      dayActivityController: DayActivityController(
+        state.dayActivityController.todaysDate,
+        water: action.water,
+        tablets: state.dayActivityController.tabletsIntake,
+      ),
+    );
   }
   //Return previous state if unknown action
   return state;
 }
 
-/// Redux middleware function to read data by specified date
+/// Redux middleware function to communicate with DB
 void fetchActionMiddleware(
-    Store<ActivityState> store, action, NextDispatcher next) {
-  ///Read DB and get data by specified date, after create new controller based on data
+    Store<ActivityState> store, action, NextDispatcher next) async {
+  ///Read DB and get data by specified date, after that create new controller based on data
   if (action is FetchDataAction) {
     var date = DayActivityController.getPrimitiveDate(action.date);
 
-    ///TODO: read DB and create new DayActivityController
+    //Read info from db
+    readDayIntakes(date).then((list) => store.dispatch(FetchDataSuccessAction(
+          DayActivityController(
+            date,
+            tablets: list[0],
+            water: list[1],
+          ),
+        )));
+  }
 
-    store.dispatch(FetchDataSuccessAction(
-      DayActivityController(DayActivityController.dateFromPrimitive(date)),
-    ));
+  /// Update DB instance and update UI
+  if (action is ChangeCompletedWaterAction) {
+    DayActivityController prev = store.state.dayActivityController;
+
+    ///If 'prev' date before current then do not change
+    /// else change data, update DB and send it to UI
+    /// TODO: Уточнить насчёт изменения будущих дат по воде!!!
+    if (prev.compareDate(DateTime.now()) >= 0) {
+      var water = WaterIntake(
+        goalToIntake: prev.waterIntake.goalToIntake,
+        type: prev.waterIntake.type,
+        completed: action.isFilled
+            ? prev.waterIntake.completed + 1
+            : prev.waterIntake.completed - 1,
+      );
+
+      ///Update action to send [water] to UI
+      action = ChangeCompletedWaterAction(
+        water: water,
+      );
+      IntakeDBProvider.db
+          .updateWaterIntake(water, store.state.dayActivityController.todaysDate)
+          .catchError((error) => print(error));
+    }
   }
 
   //Call next reducers
   next(action);
+}
+
+/// Read data about intakes from DB by specified [date], that must be primitive
+Future readDayIntakes(DateTime date) async {
+  print(date.toUtc().toString());
+  IntakeDBProvider db = IntakeDBProvider.db;
+  List list =
+      await Future.wait([db.getTabletsByDate(date), db.getWaterByDate(date)])
+          .catchError((error) => print(error));
+  return list;
 }
