@@ -18,7 +18,6 @@ class WaterReminder extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<ActivityState, ValueChanged<bool>>(
       converter: (store) {
-        print('REMINDER CONVERTER');
         _store = store;
 
         int filledCount =
@@ -28,7 +27,6 @@ class WaterReminder extends StatelessWidget {
         /// Generate list of fill/empty vessels.
         /// Example: [filledCount] = 3 and [goal] = 5, then it generates
         /// list [true, true, true, false, false]
-        /// TODO: check is that works when count of vessels changes
         filledVessels =
             List.generate(goal, (index) => index < filledCount ? true : false);
 
@@ -39,7 +37,7 @@ class WaterReminder extends StatelessWidget {
       builder: (context, changer) {
         WaterIntake water = _store.state.dayActivityController.waterIntake;
         WaterIntakeType type = water.type;
-        print(water.toJSON());
+
         //If it's glasses then 200ml else 500ml
         int mlInOneIntake = type == WaterIntakeType.Glasses ? 200 : 500;
         int goal = mlInOneIntake * water.goalToIntake;
@@ -177,8 +175,8 @@ class WaterReminder extends StatelessWidget {
     );
   }
 
-  var textStyleTurq = TextStyle(fontSize: 25.0, color: theme.primaryColor);
-  var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54);
-  var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400]);
-  var textStyleFilled = TextStyle(fontSize: 16.0, color: Colors.black45);
+  var textStyleTurq = TextStyle(fontSize: 30.0, color: theme.primaryColor, fontFamily: 'Neue');
+  var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54, fontFamily: 'Neue');
+  var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400], fontFamily: 'Neue');
+  var textStyleFilled = TextStyle(fontSize: 15.0, color: Colors.black45, fontFamily: 'ProstoSans');
 }
