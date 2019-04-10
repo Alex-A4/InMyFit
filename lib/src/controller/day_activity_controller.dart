@@ -10,7 +10,7 @@ class DayActivityController {
   /// Info about water intake, if it's not set up then creates with [WaterIntake.init()]
   final WaterIntake waterIntake;
 
-  /// Info about tablets intake, if it's not set up then null
+  /// Info about tablets intake, if it's not set up then empty list
   final List<TabletsIntake> tabletsIntake;
 
   /// Contains information about today's date. There needs only year, month and day
@@ -20,14 +20,15 @@ class DayActivityController {
   final DateTime todaysDate;
 
   ///Default constructor
-  DayActivityController(this.todaysDate,
+  DayActivityController(date,
       {WaterIntake water, List<TabletsIntake> tablets})
       : this.waterIntake = water ?? WaterIntake.init(),
-        this.tabletsIntake = tablets ?? [];
+        this.tabletsIntake = tablets ?? [],
+        this.todaysDate = getPrimitiveDate(date);
 
   /// Convert object to JSON
   Map<String, dynamic> toJSON() => {
-        'date': getPrimitiveDate(todaysDate),
+        'date': convertToPrimitiveDate(todaysDate),
         'water': waterIntake.toJSON(),
         'tablets': tabletsIntake.map((tablet) => tablet.toJSON()).toList(),
       };
@@ -43,13 +44,19 @@ class DayActivityController {
     );
   }
 
-  /// Get the primitive [date] that consists only of year, month and day
+  /// Convert date to primitive that consists only of year, month and day
   /// It will be needed to easy compare dates
-  static Map<String, dynamic> getPrimitiveDate(DateTime date) => {
+  static Map<String, dynamic> convertToPrimitiveDate(DateTime date) => {
         'year': date.year,
         'month': date.month,
         'day': date.day,
       };
+
+  /// Get the primitive date with only year, month and day
+  static DateTime getPrimitiveDate(DateTime date) {
+    var primitive = convertToPrimitiveDate(date);
+    return dateFromPrimitive(primitive);
+  }
 
   /// Get the DateTime object that consists only of year, month and day
   static DateTime dateFromPrimitive(Map<String, dynamic> date) {
