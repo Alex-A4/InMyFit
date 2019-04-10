@@ -84,7 +84,13 @@ class IntakeDBProvider {
       data,
       where: 'date = ?',
       whereArgs: [data['date']],
+      conflictAlgorithm: ConflictAlgorithm.replace
     );
+
+    //If record is absent in DB
+    if (response == 0)
+      await addWaterIntakeToDB(water, time);
+
     return response;
   }
 
@@ -129,7 +135,7 @@ class IntakeDBProvider {
             "name TEXT NOT NULL,"
             "dosage INTEGER,"
             "countOfIntakes INTEGER,"
-            "completed INTEGER"
+            "completed INTEGER,"
             "PRIMARY KEY(date, name)"
             ")",
       );
@@ -163,6 +169,10 @@ class IntakeDBProvider {
       where: 'date = ?',
       whereArgs: [data['date']],
     );
+
+    //If record is absent in DB
+    if (response == 0)
+      addTabletsIntakeToDB(tablets, time);
     return response;
   }
 
