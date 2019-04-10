@@ -15,7 +15,10 @@ class CurrentActivityController {
 
   ///Info about tablets, [TabletsIntake.completed] parameter must be null
   /// If the app launched first and user have no activity then it's null
-  TabletsIntake _tablets;
+  ///
+  /// Because count of tablets can be more than 1, then [_tablets] is a list of
+  /// [TabletsIntake]
+  List<TabletsIntake> _tablets;
 
   CurrentActivityController(this._water, this._tablets);
 
@@ -24,15 +27,17 @@ class CurrentActivityController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String data = prefs.getString('currentActivity');
     WaterIntake water;
-    TabletsIntake tablets;
+    List<TabletsIntake> tablets;
 
     if (data != null) {
       Map<String, dynamic> json = _codec.decode(data);
       water = WaterIntake.fromJSON(json['water']);
-      tablets = TabletsIntake.fromJSON(json['tablets']);
+      tablets = json['tablets']
+          .map((tablet) => TabletsIntake.fromJSON(tablet))
+          .toList();
     } else {
       water = WaterIntake.init();
-      tablets = null;
+      tablets = [];
     }
 
     return CurrentActivityController(water, tablets);
@@ -41,8 +46,10 @@ class CurrentActivityController {
   /// Save data to local cache used [SharedPreferences]
   Future<void> saveToLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String data =
-        _codec.encode({'water': _water.toJSON(), 'tablets': _tablets.toJSON()});
+    String data = _codec.encode({
+      'water': _water.toJSON(),
+      'tablets': _tablets.map((tablet) => tablet.toJSON()).toList()
+    });
 
     await prefs.setString('currentActivity', data);
   }
