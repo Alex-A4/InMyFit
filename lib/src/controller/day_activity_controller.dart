@@ -11,30 +11,34 @@ class DayActivityController {
   final WaterIntake waterIntake;
 
   /// Info about tablets intake, if it's not set up then null
-  final TabletsIntake tabletsIntake;
+  final List<TabletsIntake> tabletsIntake;
 
   /// Contains information about today's date. There needs only year, month and day
   /// All actions to save/restore date must be made with these three parameters
+  ///
+  /// This time must be created with [getPrimitiveDate] to store data into sql
   final DateTime todaysDate;
 
   ///Default constructor
   DayActivityController(this.todaysDate,
-      {WaterIntake water, TabletsIntake tablets})
+      {WaterIntake water, List<TabletsIntake> tablets})
       : this.waterIntake = water ?? WaterIntake.init(),
-        this.tabletsIntake = tablets ?? null;
+        this.tabletsIntake = tablets ?? [];
 
   /// Convert object to JSON
   Map<String, dynamic> toJSON() => {
         'date': getPrimitiveDate(todaysDate),
         'water': waterIntake.toJSON(),
-        'tablets': tabletsIntake.toJSON(),
+        'tablets': tabletsIntake.map((tablet) => tablet.toJSON()).toList(),
       };
 
   ///Create controller based on JSON data which could be get from DB, for example
   factory DayActivityController.fromJSON(Map<String, dynamic> data) {
     return DayActivityController(
       dateFromPrimitive(data['date']),
-      tablets: TabletsIntake.fromJSON(data['tablets']),
+      tablets: data['tablets']
+          .map((tablet) => TabletsIntake.fromJSON(tablet))
+          .toList(),
       water: WaterIntake.fromJSON(data['water']),
     );
   }
