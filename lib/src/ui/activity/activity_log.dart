@@ -36,9 +36,10 @@ class ActivityLog extends StatelessWidget {
 
   Widget getSpacer() {
     return Container(
-      height: 65.0,
+      padding: const EdgeInsets.only(top: 32.0),
+      height: 75.0,
       child: Image.asset(
-        'assets/watertips/watertip1.png',
+        'assets/activity_water/spacer.png',
         height: 65.0,
         width: double.infinity,
         fit: BoxFit.fill,
