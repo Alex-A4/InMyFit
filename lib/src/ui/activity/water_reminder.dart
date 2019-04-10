@@ -32,7 +32,7 @@ class WaterReminder extends StatelessWidget {
 
         /// If [isFilled] true then increase count else decrease
         return (isFilled) =>
-            store.dispatch(ChangeCompletedWaterAction(isFilled));
+            store.dispatch(ChangeCompletedWaterAction(isFilled: isFilled));
       },
       builder: (context, changer) {
         WaterIntake water = _store.state.dayActivityController.waterIntake;
