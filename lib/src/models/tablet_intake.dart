@@ -27,12 +27,11 @@ class TabletsIntake {
         countOfIntakes: data['countOfIntakes']);
   }
 
-  
   ///Covert object to JSON
   Map<String, dynamic> toJSON() => {
-        'dosage': dosage,
-        'completed': completed,
         'name': name,
+        'dosage': dosage,
         'countOfIntakes': countOfIntakes,
+        'completed': completed,
       };
 }
