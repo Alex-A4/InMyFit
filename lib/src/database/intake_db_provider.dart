@@ -74,7 +74,7 @@ class IntakeDBProvider {
   }
 
   /// Update the instance of [WaterIntake] into DB. [time] variable must be primitive
-  updateWaterIntake(WaterIntake water, DateTime time) async {
+  Future updateWaterIntake(WaterIntake water, DateTime time) async {
     final db = await waterDb;
     Map<String, dynamic> data = water.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
@@ -106,7 +106,7 @@ class IntakeDBProvider {
   }
 
   /// Delete whole [WaterIntake] database. Be careful using it!
-  deleteWaterDB() async {
+  Future deleteWaterDB() async {
     final db = await waterDb;
     db.delete('Water');
   }
@@ -152,7 +152,7 @@ class IntakeDBProvider {
   }
 
   /// Update the instance of [TabletsIntake] into DB. [time] variable must be primitive
-  updateTabletsIntake(TabletsIntake tablets, DateTime time) async {
+  Future updateTabletsIntake(TabletsIntake tablets, DateTime time) async {
     final db = await tabletsDb;
     Map<String, dynamic> data = tablets.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
@@ -184,7 +184,7 @@ class IntakeDBProvider {
   }
 
   /// Delete whole [TabletsIntake] database. Be careful using it!
-  deleteTabletsDB() async {
+  Future deleteTabletsDB() async {
     final db = await tabletsDb;
     db.delete('Tablets');
   }
