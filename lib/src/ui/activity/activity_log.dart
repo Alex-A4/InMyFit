@@ -11,6 +11,7 @@ class ActivityLog extends StatelessWidget {
   final Store<ActivityState> store;
 
   ActivityLog({Key key, this.store}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +21,7 @@ class ActivityLog extends StatelessWidget {
         child: ListView(
           cacheExtent: 10.0,
           key: Key('ActivityLogListView'),
-          padding: EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: 28.0),
           children: <Widget>[
             CalendarWidget(),
             WaterTipWidget(),
