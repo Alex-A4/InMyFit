@@ -11,10 +11,10 @@ class ActivityLog extends StatelessWidget {
   final Store<ActivityState> store;
 
   ActivityLog({Key key, this.store}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: StoreProvider<ActivityState>(
         store: store,
         child: ListView(
