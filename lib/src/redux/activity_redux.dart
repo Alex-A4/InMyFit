@@ -65,14 +65,16 @@ ActivityState activityReducer(ActivityState state, action) {
     );
 
   if (action is ChangeCompletedWaterAction) {
-    return ActivityState(
-      isFetching: false,
-      dayActivityController: DayActivityController(
-        state.dayActivityController.todaysDate,
-        water: action.water,
-        tablets: state.dayActivityController.tabletsIntake,
-      ),
-    );
+    //If it's modified water then update state
+    if (action.water != null)
+      return ActivityState(
+        isFetching: false,
+        dayActivityController: DayActivityController(
+          state.dayActivityController.todaysDate,
+          water: action.water,
+          tablets: state.dayActivityController.tabletsIntake,
+        ),
+      );
   }
   //Return previous state if unknown action
   return state;
@@ -101,8 +103,7 @@ void fetchActionMiddleware(
 
     ///If 'prev' date before current then do not change
     /// else change data, update DB and send it to UI
-    /// TODO: Уточнить насчёт изменения будущих дат по воде!!!
-    if (prev.compareDate(DateTime.now()) >= 0) {
+    if (prev.compareDate(DateTime.now()) == 0) {
       var water = WaterIntake(
         goalToIntake: prev.waterIntake.goalToIntake,
         type: prev.waterIntake.type,
@@ -115,8 +116,10 @@ void fetchActionMiddleware(
       action = ChangeCompletedWaterAction(
         water: water,
       );
+
       IntakeDBProvider.db
-          .updateWaterIntake(water, store.state.dayActivityController.todaysDate)
+          .updateWaterIntake(
+              water, store.state.dayActivityController.todaysDate)
           .catchError((error) => print(error));
     }
   }
