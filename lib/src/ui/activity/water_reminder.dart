@@ -8,6 +8,7 @@ import 'package:redux/redux.dart';
 class WaterReminder extends StatelessWidget {
   Store<ActivityState> _store;
   final _peopleHeight = 120.0;
+  final _peopleWidth = 100.0;
 
   ///For UI filled vessels will displays like bool list and for controller
   /// it's count of filled vessels
@@ -107,7 +108,7 @@ class WaterReminder extends StatelessWidget {
                   ),
 
                   Container(
-                    width: 100.0,
+                    width: _peopleWidth,
                     height: _peopleHeight,
                     child: Stack(
                       alignment: Alignment.center,
@@ -116,18 +117,18 @@ class WaterReminder extends StatelessWidget {
                             alignment: Alignment.bottomCenter,
                             child: Container(
                               height: peopleColorHeight,
-                              color: theme.primaryColor,
+                              color: peopleFillColor,
                             )),
                         Image.asset(
                           'assets/activity_water/people.png',
                           height: _peopleHeight,
-                          width: 100.0,
+                          width: _peopleWidth,
                           fit: BoxFit.fill,
                         ),
                       ],
                     ),
                   ),
-                  
+
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -199,6 +200,7 @@ class WaterReminder extends StatelessWidget {
     );
   }
 
+  var peopleFillColor = Color(0xFFA5F4F1);
   var textStyleTurq =
       TextStyle(fontSize: 30.0, color: theme.primaryColor, fontFamily: 'Neue');
   var textStyle1 =
