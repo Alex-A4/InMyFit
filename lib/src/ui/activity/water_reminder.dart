@@ -7,6 +7,7 @@ import 'package:redux/redux.dart';
 
 class WaterReminder extends StatelessWidget {
   Store<ActivityState> _store;
+  final _peopleHeight = 120.0;
 
   ///For UI filled vessels will displays like bool list and for controller
   /// it's count of filled vessels
@@ -44,7 +45,10 @@ class WaterReminder extends StatelessWidget {
         int completed = mlInOneIntake * water.completed;
         int percent = (completed / goal.toDouble() * 100).toInt();
 
+        double peopleColorHeight = percent.toDouble() / 100 * _peopleHeight;
+
         return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           key: Key('WaterReminderKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,7 +62,7 @@ class WaterReminder extends StatelessWidget {
                     child: Text('Приём воды', style: textStyleTurq),
                   ),
                   Container(
-                    padding: const EdgeInsets.only(top: 4.0, right: 16.0),
+                    padding: const EdgeInsets.only(top: 4.0),
                     alignment: AlignmentDirectional.centerEnd,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(40.0),
@@ -101,9 +105,29 @@ class WaterReminder extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   Container(
-                    child: Image.asset('assets/activity_water/people.png'),
+                    width: 100.0,
+                    height: _peopleHeight,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: <Widget>[
+                        Container(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: peopleColorHeight,
+                              color: theme.primaryColor,
+                            )),
+                        Image.asset(
+                          'assets/activity_water/people.png',
+                          height: _peopleHeight,
+                          width: 100.0,
+                          fit: BoxFit.fill,
+                        ),
+                      ],
+                    ),
                   ),
+                  
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -175,8 +199,12 @@ class WaterReminder extends StatelessWidget {
     );
   }
 
-  var textStyleTurq = TextStyle(fontSize: 30.0, color: theme.primaryColor, fontFamily: 'Neue');
-  var textStyle1 = TextStyle(fontSize: 18.0, color: Colors.black54, fontFamily: 'Neue');
-  var textStyle2 = TextStyle(fontSize: 16.0, color: Colors.grey[400], fontFamily: 'Neue');
-  var textStyleFilled = TextStyle(fontSize: 15.0, color: Colors.black45, fontFamily: 'ProstoSans');
+  var textStyleTurq =
+      TextStyle(fontSize: 30.0, color: theme.primaryColor, fontFamily: 'Neue');
+  var textStyle1 =
+      TextStyle(fontSize: 18.0, color: Colors.black54, fontFamily: 'Neue');
+  var textStyle2 =
+      TextStyle(fontSize: 16.0, color: Colors.grey[400], fontFamily: 'Neue');
+  var textStyleFilled = TextStyle(
+      fontSize: 15.0, color: Colors.black45, fontFamily: 'ProstoSans');
 }
