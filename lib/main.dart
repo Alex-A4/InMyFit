@@ -20,6 +20,7 @@ void main() {
 final theme = ThemeData(
   primaryColor: Color(0xFF34EBE9),
   primaryColorLight: Color(0xFFD0FFAE),
+  accentColor: Color(0xAFA5F4F1),
   brightness: Brightness.light,
   textTheme: TextTheme(title: TextStyle(fontSize: 22.0, color: Colors.white)),
 );
