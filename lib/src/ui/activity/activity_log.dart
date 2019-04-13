@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
+import 'package:inmyfit/src/ui/activity/tablets_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_tip.dart';
 import 'package:redux/src/store.dart';
@@ -27,7 +28,7 @@ class ActivityLog extends StatelessWidget {
             WaterTipWidget(),
             WaterReminder(),
             getSpacer(),
-            getTabletsSchedule(),
+            TabletsReminder(),
             getMotivatorAndCourse(),
           ],
         ),
@@ -44,50 +45,6 @@ class ActivityLog extends StatelessWidget {
         height: 65.0,
         width: double.infinity,
         fit: BoxFit.fill,
-      ),
-    );
-  }
-
-  //Get the widget with with tablets schedule
-  Widget getTabletsSchedule() {
-    var textStyleRed = TextStyle(color: Colors.red[300], fontSize: 25.0);
-
-    return Container(
-      key: Key('TabletsSchedule'),
-      padding: const EdgeInsets.only(top: 8.0),
-      color: Colors.grey[200],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Stack(
-            fit: StackFit.loose,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(top: 4.0),
-                alignment: AlignmentDirectional.center,
-                child: Text('Приём таблеток', style: textStyleRed),
-              ),
-              Container(
-                padding: const EdgeInsets.only(top: 4.0, right: 16.0),
-                alignment: AlignmentDirectional.centerEnd,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(40.0),
-                  child: Container(
-                    width: 30.0,
-                    height: 30.0,
-                    child: Image.asset(
-                      'assets/activity_water/settings.png',
-                    ),
-                  ),
-                  onTap: () {},
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.0),
-
-          //TODO: use expandable widgets for tablets
-        ],
       ),
     );
   }
