@@ -10,19 +10,54 @@ class TabletsIntake {
   /// It must be one of [1, 2, 3]
   final int countOfIntakes;
 
-  ///The number of tablets intake that completed
+  /// Schedule of completed intakes
+  /// Describes current user activity, i.e. schedule that user follows
+  /// Looks like: {
+  ///   'morning' : false,
+  ///   'afternoon' : true,
+  ///   'evening' : false,
+  /// }
+  /// In string above map looks: FFT, afternoon on last place
   ///
-  /// To describes current user activity, i.e. schedule that user follows
-  /// this variable must be null
-  final int completed;
+  /// This map means that user had completed afternoon intake
+  /// For more see [getCompletedInString] and [getDefaultCompleted]
+  final Map<String, bool> completed;
 
-  TabletsIntake({this.dosage, this.countOfIntakes, this.completed, this.name});
+  /// Private constructor
+  TabletsIntake._(
+      {this.name, this.countOfIntakes, this.dosage, this.completed});
+
+  /// Factory to create new instance of [TabletsIntake]
+  factory TabletsIntake({dosage, countOfIntakes, name}) {
+    return TabletsIntake._(
+        dosage: dosage,
+        name: name,
+        countOfIntakes: countOfIntakes,
+        completed: getDefaultCompleted(countOfIntakes));
+  }
+
+  /// Get default map of completed intakes depends on [count] of intakes
+  /// If count == 1 then intake in morning
+  /// if count == 2 then intakes in morning and evening
+  /// If count == 3 then intakes in all three time of day
+  static Map<String, bool> getDefaultCompleted(int count) {
+    Map<String, bool> map = {};
+
+    // count == 1 or more
+    if (count >= 1) map['morning'] = false;
+    // count == 3
+    if (count == 3) map['afternoon'] = false;
+    // count == 2 or more
+    if (count >= 2) map['evening'] = false;
+
+    return map;
+  }
 
   ///Factory to restore object from JSON
   factory TabletsIntake.fromJSON(Map<String, dynamic> data) {
-    return TabletsIntake(
+    return TabletsIntake._(
         dosage: data['dosage'],
-        completed: data['completed'],
+        completed: getCompletedFromString(data['completed']),
         name: data['name'],
         countOfIntakes: data['countOfIntakes']);
   }
@@ -32,6 +67,65 @@ class TabletsIntake {
         'name': name,
         'dosage': dosage,
         'countOfIntakes': countOfIntakes,
-        'completed': completed,
+        'completed': getCompletedInString(),
       };
+
+  /// Convert [completed] to string representation to store in DB
+  /// If there was
+  /// {'morning' : true}, then it will be converted to 'T'
+  /// If there was
+  /// {
+  ///   'morning' : false,
+  ///   'afternoon': false
+  ///   'evening' : true,
+  /// }
+  /// then it will be converted to 'FTF', afternoon on last place
+  String getCompletedInString() {
+    String compl = '';
+
+    // Morning symbol
+    compl = compl +
+        (completed['morning'] != null
+            ? convertBoolToString(completed['morning'])
+            : '');
+    // Afternoon symbol
+    compl = compl +
+        (completed['afternoon'] != null
+            ? convertBoolToString(completed['afternoon'])
+            : '');
+    // Evening symbol
+    compl = compl +
+        (completed['evening'] != null
+            ? convertBoolToString(completed['evening'])
+            : '');
+
+    return compl;
+  }
+
+  /// Return 'T' if [compl] is true and 'F' otherwise
+  String convertBoolToString(bool compl) {
+    return compl ? 'T' : 'F';
+  }
+
+  /// Convert [data] string to [Map] representation of [cpmpleted] variable
+  /// This method is reverse to [getCompletedInString]
+  static Map getCompletedFromString(String data) {
+    Map<String, bool> map = {};
+
+    if (data.length >= 1) map['morning'] = convertStringToBool(data[0]);
+    if (data.length >= 2) map['evening'] = convertStringToBool(data[1]);
+    if (data.length >= 3) map['afternoon'] = convertStringToBool(data[2]);
+
+    return map;
+  }
+
+  /// Return true if [symbol] is 'T' and false otherwise
+  static bool convertStringToBool(String symbol) {
+    if (symbol.compareTo('T') == 0) return true;
+    return false;
+  }
+
+  @override
+  String toString() => 'dosage : $dosage, name: $name, countOfIntakes: $countOfIntakes'
+  '\ncompleted: ${completed.toString()}';
 }
