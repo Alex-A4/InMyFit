@@ -106,7 +106,6 @@ class WaterReminder extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   Container(
                     width: _peopleWidth,
                     height: _peopleHeight,
@@ -128,7 +127,6 @@ class WaterReminder extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -176,7 +174,7 @@ class WaterReminder extends StatelessWidget {
                 children: filledVessels
                     .asMap()
                     .keys
-                    .map((index) => getGlassImage(changer, index))
+                    .map((index) => getGlassImage(changer, index, type))
                     .toList(),
               ),
             ],
@@ -187,7 +185,8 @@ class WaterReminder extends StatelessWidget {
   }
 
   ///Get the image with glass (filled or not based on [filled])
-  Widget getGlassImage(ValueChanged<bool> changer, int index) {
+  Widget getGlassImage(
+      ValueChanged<bool> changer, int index, WaterIntakeType type) {
     bool filled = filledVessels[index];
     return GestureDetector(
       onTap: () {
@@ -195,8 +194,9 @@ class WaterReminder extends StatelessWidget {
         filledVessels[index] = !filledVessels[index];
         changer(filledVessels[index]);
       },
-      child: Image.asset(
-          'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png'),
+      child: Image.asset(type == WaterIntakeType.Glasses
+          ? 'assets/activity_water/${filled ? 'glass_full' : 'glass_empty'}.png'
+          : 'assets/activity_water/${filled ? 'bottle_full' : 'bottle_empty'}.png'),
     );
   }
 
