@@ -123,6 +123,9 @@ class IntakeDBProvider {
 
   ///Get the instance of DB where [TabletsIntake] sorts by date
   /// date stores in [millisecondsSinceEpoch] to restore [DateTime] object
+  ///
+  /// completed values stores like String objects,
+  /// for more information see [TabletsIntake.completed]
   Future<Database> getTabletsDBInstance() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = join(directory.path, 'tabletsDB.db');
@@ -135,7 +138,7 @@ class IntakeDBProvider {
             "name TEXT NOT NULL,"
             "dosage INTEGER,"
             "countOfIntakes INTEGER,"
-            "completed INTEGER,"
+            "completed TEXT,"
             "PRIMARY KEY(date, name)"
             ")",
       );
@@ -178,7 +181,7 @@ class IntakeDBProvider {
 
   /// Get the list of [TabletsIntake] from DB by specified [time], which must
   /// be primitive.
-  /// If [response] is empty then return null else return list of tablets
+  /// If [response] is empty then return empty list else return list of tablets
   Future<List<TabletsIntake>> getTabletsByDate(DateTime time) async {
     final db = await tabletsDb;
 
