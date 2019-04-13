@@ -14,9 +14,11 @@ void testWaterAndTabletIntakesConverting() {
   water = WaterIntake.fromJSON(json);
 
   //Test tablets
-  TabletsIntake tablets = TabletsIntake(
-      completed: 1, countOfIntakes: 3, name: 'Penicilin', dosage: 1);
+  TabletsIntake tablets =
+      TabletsIntake(countOfIntakes: 3, name: 'Penicilin', dosage: 1);
   json = tablets.toJSON();
   print(json);
+  json['completed'] = 'TFT';
   tablets = TabletsIntake.fromJSON(json);
+  print(tablets);
 }
