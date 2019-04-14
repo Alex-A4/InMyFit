@@ -20,7 +20,8 @@ class ActivityLog extends StatelessWidget {
       body: StoreProvider<ActivityState>(
         store: store,
         child: ListView(
-          cacheExtent: 10.0,
+          ///This variable cache 300 pixels above and below of ViewPort
+          cacheExtent: 300.0,
           key: Key('ActivityLogListView'),
           padding: EdgeInsets.only(top: 28.0),
           children: <Widget>[
