@@ -19,19 +19,19 @@ class ActivityLog extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       body: StoreProvider<ActivityState>(
         store: store,
-        child: ListView(
-          ///This variable cache 300 pixels above and below of ViewPort
-          cacheExtent: 300.0,
+        child: SingleChildScrollView(
           key: Key('ActivityLogListView'),
           padding: EdgeInsets.only(top: 28.0),
-          children: <Widget>[
-            CalendarWidget(key: Key('Calendar')),
-            WaterTipWidget(key: Key('WaterTip')),
-            WaterReminder(key: Key('WaterReminder')),
-            getSpacer(),
-            TabletsReminder(key: Key('TabletsReminder')),
-            getMotivatorAndCourse(),
-          ],
+          child: Column(
+            children: <Widget>[
+              CalendarWidget(key: Key('Calendar')),
+              WaterTipWidget(key: Key('WaterTip')),
+              WaterReminder(key: Key('WaterReminder')),
+              getSpacer(),
+              TabletsReminder(key: Key('TabletsReminder')),
+              getMotivatorAndCourse(),
+            ],
+          ),
         ),
       ),
     );
