@@ -27,6 +27,7 @@ dependencies:
   table_calendar:
     git: https://github.com/Alex-A4/table_calendar.git
   intl: ^0.15.7
+  expandable: ^2.1.0+3
 
 
 dev_dependencies:
