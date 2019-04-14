@@ -77,10 +77,14 @@ class TabletsReminder extends StatelessWidget {
           color: Colors.white),
       child: ExpandablePanel(
         header: Container(
-          margin: EdgeInsets.only(top: 16.0),
+          margin: EdgeInsets.only(top: 16.0, left: 10.0),
           child: Text(
             header,
-            style: TextStyle(color: theme.accentColor, fontSize: 15.0),
+            style: TextStyle(
+              color: theme.primaryColor,
+              fontSize: 17.0,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         tapHeaderToExpand: true,
@@ -110,17 +114,17 @@ class TabletsReminder extends StatelessWidget {
         children: <Widget>[
           Text(
             'Марганец-DC',
-            style: TextStyle(fontSize: 21.0),
+            style: TextStyle(fontSize: 21.0, color: Colors.grey[400]),
           ),
-          Text('x 1'),
+          Text('x 1', style: TextStyle(color: Colors.grey[300])),
           SizedBox(width: 20.0),
           SizedBox(
-            width: 50.0,
+            width: 65.0,
             height: 25.0,
             child: RaisedButton(
               padding: const EdgeInsets.all(0.0),
-              // shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(5.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
               onPressed: () {},
               color: theme.primaryColor,
               textColor: Colors.white,
@@ -129,10 +133,7 @@ class TabletsReminder extends StatelessWidget {
           ),
         ],
       ),
-      subtitle: Text(
-        'Pill 10mg',
-        softWrap: true,
-      ),
+      subtitle: Text('Pill 10mg', style: TextStyle(color: Colors.grey[300])),
     );
   }
 
