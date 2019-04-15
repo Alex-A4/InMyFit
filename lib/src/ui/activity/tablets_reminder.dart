@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import '../../redux/activity_redux.dart';
 import 'package:expandable/expandable.dart';
+import '../../models/tablet_intake.dart';
 import '../../../main.dart';
 
 class TabletsReminder extends StatelessWidget {
@@ -44,19 +45,25 @@ class TabletsReminder extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20.0),
-          StoreConnector<ActivityState, VoidCallback>(
+          StoreConnector<ActivityState, Function(TabletsIntake, String)>(
             converter: (store) {
               _store = store;
-              return () {};
+
+              /// Method to push ned action to reducer to update data about [tablet]
+              return (tablet, dayTime) =>
+                  store.dispatch(ChangeCompletedTabletsAction(
+                    dayTime: dayTime,
+                    tablet: tablet,
+                  ));
             },
             builder: (context, callback) {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   children: <Widget>[
-                    getExpandableItem('утро', [1, 2, 3]),
-                    getExpandableItem('полдень', [1]),
-                    getExpandableItem('вечер', []),
+                    getExpandableItem('утро', 'morning', callback),
+                    getExpandableItem('полдень', 'afternoon', callback),
+                    getExpandableItem('вечер', 'evening', callback),
                   ],
                 ),
               );
@@ -67,7 +74,11 @@ class TabletsReminder extends StatelessWidget {
     );
   }
 
-  Widget getExpandableItem(String header, List expanded) {
+  /// Get item that can be extended
+  /// Item is a separated info about morning/afternoon/evening intakes
+  /// [dayTime] variable describes the time of day morning/afternoon/evening
+  /// [callback] function needs to toggle reducer
+  Widget getExpandableItem(String header, String dayTime, Function callback) {
     return Container(
       margin: const EdgeInsets.only(top: 16.0),
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -88,35 +99,45 @@ class TabletsReminder extends StatelessWidget {
           ),
         ),
         tapHeaderToExpand: true,
-        collapsed: getCollapsedTabletsWidget(),
-        expanded: getExpandedTabletsWidget(expanded),
+        collapsed: getCollapsedTabletsWidget(dayTime),
+        expanded: getExpandedTabletsWidget(dayTime, callback),
       ),
     );
   }
 
   /// Create widget for expanded information about tablets
-  Widget getExpandedTabletsWidget(List tablets) {
+  /// [dayTime] variable describes the day of time, see [getExpandableItem]
+  Widget getExpandedTabletsWidget(String dayTime, Function callback) {
+    var tablets = _store.state.dayActivityController.tabletsIntake;
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children:
-            tablets.map((tablet) => getExtendedTabletInfo(tablet)).toList(),
+        children: tablets
+            // Build column of tablets that contains [dayTime]
+            .where((tablet) => tablet.completed.containsKey(dayTime))
+            .map((tablet) => getExtendedTabletInfo(tablet, dayTime, callback))
+            .toList(),
       ),
     );
   }
 
   /// Get extended information about one tablet
-  Widget getExtendedTabletInfo(var tablet) {
+  /// For info about [dayTime], see [getExpandableItem], this needs to
+  /// call redux method
+  /// [callback] needs to toggle reducer
+  Widget getExtendedTabletInfo(
+      TabletsIntake tablet, String dayTime, Function callback) {
     return ListTile(
       title: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
-            'Марганец-DC',
+            tablet.name,
             style: TextStyle(fontSize: 21.0, color: Colors.grey[400]),
           ),
-          Text('x 1', style: TextStyle(color: Colors.grey[300])),
+          Text('x ${tablet.dosage}', style: TextStyle(color: Colors.grey[300])),
           SizedBox(width: 20.0),
           SizedBox(
             width: 65.0,
@@ -125,7 +146,9 @@ class TabletsReminder extends StatelessWidget {
               padding: const EdgeInsets.all(0.0),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
-              onPressed: () {},
+              onPressed: tablet.completed[dayTime]
+                  ? null
+                  : () => callback(tablet, dayTime),
               color: theme.primaryColor,
               textColor: Colors.white,
               child: Text('ok'),
@@ -137,7 +160,9 @@ class TabletsReminder extends StatelessWidget {
     );
   }
 
-  Widget getCollapsedTabletsWidget() {
+  /// Get the collapsed widget that contains short info about tablets
+  /// For info about [datTime], see [getExpandableItem]
+  Widget getCollapsedTabletsWidget(String dayTime) {
     return Container(
         // child: Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
