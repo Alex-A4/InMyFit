@@ -1,5 +1,6 @@
 import 'package:inmyfit/src/database/intake_db_provider.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
+import 'package:inmyfit/src/models/tablet_intake.dart';
 
 import '../controller/day_activity_controller.dart';
 import '../controller/current_activity_controller.dart';
@@ -47,6 +48,18 @@ class ChangeCompletedWaterAction {
   ChangeCompletedWaterAction({this.isFilled, this.water});
 }
 
+/// Action that needs to change completed value of [tablet]
+/// [dayTime] variable contains info about the time of date, i.e. morning/afternoon/evening
+class ChangeCompletedTabletsAction {
+  /// This variable needs to identify object in list and update data
+  final TabletsIntake tablet;
+  final String dayTime;
+  /// Index of [tablet] in list in [DayActivityController.tabletsIntake]
+  final int index;
+
+  ChangeCompletedTabletsAction({this.tablet, this.dayTime, this.index});
+}
+
 /// Redux reducer to communicate between UI and store
 ActivityState activityReducer(ActivityState state, action) {
   if (action is FetchDataAction)
@@ -68,13 +81,28 @@ ActivityState activityReducer(ActivityState state, action) {
     //If it's modified water then update state
     if (action.water != null)
       return ActivityState(
-        isFetching: false,
+        currentActivityController: state.currentActivityController,
         dayActivityController: DayActivityController(
           state.dayActivityController.todaysDate,
           water: action.water,
           tablets: state.dayActivityController.tabletsIntake,
         ),
       );
+  }
+
+  if (action is ChangeCompletedTabletsAction) {
+    if (action.tablet != null) {
+      var list = state.dayActivityController.tabletsIntake;
+      list[action.index] = action.tablet;
+      return ActivityState(
+        currentActivityController: state.currentActivityController,
+        dayActivityController: DayActivityController(
+          state.dayActivityController.todaysDate,
+          water: state.dayActivityController.waterIntake,
+          tablets: list,
+        ),
+      );
+    }
   }
   //Return previous state if unknown action
   return state;
@@ -124,13 +152,49 @@ void fetchActionMiddleware(
     }
   }
 
+  /// Update DB data and UI
+  if (action is ChangeCompletedTabletsAction) {
+    DayActivityController prev = store.state.dayActivityController;
+    var tablet, index;
+
+    ///If 'prev' date before current then do not change
+    /// else change data, update DB and send it to UI
+    if (prev.compareDate(DateTime.now()) == 0) {
+      /// Index of tablet in list
+      index = prev.tabletsIntake.indexOf(action.tablet);
+      var prevTablet = prev.tabletsIntake[index];
+
+      /// Reverse value by specified [action.dayTime]
+      /// For good working this method [completed] must contain [action.dayTime]
+      /// or it will lead to unexpected behaviour
+      var completed = prev.tabletsIntake[index].completed;
+      completed[action.dayTime] = !completed[action.dayTime];
+
+      tablet = TabletsIntake(
+        countOfIntakes: prevTablet.countOfIntakes,
+        name: prevTablet.name,
+        dosage: prevTablet.dosage,
+        completed: completed,
+      );
+
+      // Update data in DB
+      IntakeDBProvider.db
+          .updateTabletsIntake(tablet, prev.todaysDate)
+          .catchError((error) => print(error));
+    } else
+      //Put null to not update UI
+      tablet = null;
+
+    // Update tablet in action to change UI
+    action = ChangeCompletedTabletsAction(dayTime: null, tablet: tablet, index: index);
+  }
+
   //Call next reducers
   next(action);
 }
 
 /// Read data about intakes from DB by specified [date], that must be primitive
 Future readDayIntakes(DateTime date) async {
-  print(date.toUtc().toString());
   IntakeDBProvider db = IntakeDBProvider.db;
   List list =
       await Future.wait([db.getTabletsByDate(date), db.getWaterByDate(date)])
