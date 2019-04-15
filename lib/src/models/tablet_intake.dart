@@ -28,12 +28,12 @@ class TabletsIntake {
       {this.name, this.countOfIntakes, this.dosage, this.completed});
 
   /// Factory to create new instance of [TabletsIntake]
-  factory TabletsIntake({dosage, countOfIntakes, name}) {
+  factory TabletsIntake({dosage, countOfIntakes, name, completed}) {
     return TabletsIntake._(
         dosage: dosage,
         name: name,
         countOfIntakes: countOfIntakes,
-        completed: getDefaultCompleted(countOfIntakes));
+        completed: completed ?? getDefaultCompleted(countOfIntakes));
   }
 
   /// Get default map of completed intakes depends on [count] of intakes
@@ -126,6 +126,7 @@ class TabletsIntake {
   }
 
   @override
-  String toString() => 'dosage : $dosage, name: $name, countOfIntakes: $countOfIntakes'
-  '\ncompleted: ${completed.toString()}';
+  String toString() =>
+      'dosage : $dosage, name: $name, countOfIntakes: $countOfIntakes'
+      '\ncompleted: ${completed.toString()}';
 }
