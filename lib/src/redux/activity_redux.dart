@@ -144,7 +144,7 @@ void fetchActionMiddleware(
   if (action is ChangeCompletedWaterAction) {
     DayActivityController prev = store.state.dayActivityController;
 
-    ///If 'prev' date before current then do not change
+    ///If 'prev' date before or after current then do not change
     /// else change data, update DB and send it to UI
     if (prev.compareDate(DateTime.now()) == 0) {
       var water = WaterIntake(
@@ -172,7 +172,7 @@ void fetchActionMiddleware(
     DayActivityController prev = store.state.dayActivityController;
     var tablet, index;
 
-    ///If 'prev' date before current then do not change
+    ///If 'prev' date before or after current then do not change
     /// else change data, update DB and send it to UI
     if (prev.compareDate(DateTime.now()) == 0) {
       /// Index of tablet in list
