@@ -11,16 +11,16 @@ class CurrentActivityController {
 
   ///Info about water, [WaterIntake.completed] parameter must be null
   /// If the app launched first and user have no activity then create default
-  WaterIntake _water;
+  final WaterIntake water;
 
   ///Info about tablets, [TabletsIntake.completed] parameter must be null
   /// If the app launched first and user have no activity then it's null
   ///
   /// Because count of tablets can be more than 1, then [_tablets] is a list of
   /// [TabletsIntake]
-  List<TabletsIntake> _tablets;
+  final List<TabletsIntake> tablets;
 
-  CurrentActivityController(this._water, this._tablets);
+  CurrentActivityController(this.water, this.tablets);
 
   /// Restore data from [SharedPreferences]
   static Future<CurrentActivityController> restoreFromCache() async {
@@ -36,7 +36,7 @@ class CurrentActivityController {
           .map((tablet) => TabletsIntake.fromJSON(tablet))
           .toList();
     } else {
-      water = WaterIntake.init();
+      water = WaterIntake.initDefault();
       tablets = [];
     }
 
@@ -47,8 +47,8 @@ class CurrentActivityController {
   Future<void> saveToLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String data = _codec.encode({
-      'water': _water.toJSON(),
-      'tablets': _tablets.map((tablet) => tablet.toJSON()).toList()
+      'water': water.toJSON(),
+      'tablets': tablets.map((tablet) => tablet.toJSON()).toList()
     });
 
     await prefs.setString('currentActivity', data);
