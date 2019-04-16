@@ -57,6 +57,16 @@ class WaterIntake {
         'goalToIntake': goalToIntake,
         'completed': completed,
       };
+
+  /// Return is [other] equals to 'this'
+  @override
+  bool operator ==(other) {
+    if (other is! WaterIntake) return false;
+    if (other.type == this.type && other.goalToIntake == this.goalToIntake)
+      return true;
+
+    return false;
+  }
 }
 
 ///Enum that describes type of vessels for water intake
