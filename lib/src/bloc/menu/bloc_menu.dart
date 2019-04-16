@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:inmyfit/src/controller/current_activity_controller.dart';
 import 'package:inmyfit/src/controller/day_activity_controller.dart';
+import 'package:inmyfit/src/models/water_intake.dart';
 import 'menu.dart';
 import 'package:redux/redux.dart';
 import '../../redux/activity_redux.dart';
@@ -20,6 +21,9 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       var currentController =
           await CurrentActivityController.restoreFromCache();
       var intakes = await readDayIntakes(date);
+      if (intakes[1] == null)
+        intakes[1] = WaterIntake.initOnBasic(currentController.water);
+
       var dayController = DayActivityController(
         date,
         tablets: intakes[0],
