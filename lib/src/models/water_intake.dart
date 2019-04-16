@@ -14,10 +14,20 @@ class WaterIntake {
 
   WaterIntake({this.type, this.goalToIntake, this.completed});
 
-  ///Set up initial intake with default parameters
-  factory WaterIntake.init() {
+  /// Set up initial intake with default parameters from [basic] instance
+  /// that got from CurrentActivityController
+  factory WaterIntake.initOnBasic(WaterIntake basic) {
     return WaterIntake(
-        completed: 0, type: WaterIntakeType.Glasses, goalToIntake: 10);
+        completed: 0, type: basic.type, goalToIntake: basic.goalToIntake);
+  }
+
+  /// Initialize WaterIntake when app launched first
+  factory WaterIntake.initDefault() {
+    return WaterIntake(
+      completed: 0,
+      goalToIntake: 10,
+      type: WaterIntakeType.Glasses,
+    );
   }
 
   ///Restore object from JSON
