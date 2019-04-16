@@ -36,6 +36,16 @@ class TabletsIntake {
         completed: completed ?? getDefaultCompleted(countOfIntakes));
   }
 
+  /// Factory to create instance based on [basic] that got from CurrentActivityController
+  /// This needs to create empty instance based on data
+  factory TabletsIntake.initOnBasic(TabletsIntake basic) {
+    return TabletsIntake(
+      countOfIntakes: basic.countOfIntakes,
+      dosage: basic.dosage,
+      name: basic.name,
+    );
+  }
+
   /// Get default map of completed intakes depends on [count] of intakes
   /// If count == 1 then intake in morning
   /// if count == 2 then intakes in morning and evening
