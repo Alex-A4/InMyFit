@@ -61,6 +61,20 @@ class ChangeCompletedTabletsAction {
   ChangeCompletedTabletsAction({this.tablet, this.dayTime, this.index});
 }
 
+/// Action to update data of [CurrentActivityController]
+/// This action also must update WaterIntake of today's [DayActivityController]
+class UpdateCurrentControllerWater {
+  // This two variables needs to create [CurrentActivityController] with new [WaterIntakes]
+  final WaterIntakeType type;
+  final int goalToIntake;
+
+  /// This variable creates in middlewater and needs to update state in reducer
+  /// [controller] is instance where updates water data
+  final CurrentActivityController controller;
+
+  UpdateCurrentControllerWater({this.type, this.goalToIntake, this.controller});
+}
+
 /// Redux reducer to communicate between UI and store
 ActivityState activityReducer(ActivityState state, action) {
   if (action is FetchDataAction)
@@ -105,6 +119,40 @@ ActivityState activityReducer(ActivityState state, action) {
       );
     }
   }
+
+  /// This action must provide [CurrentActivityController] to update state
+  if (action is UpdateCurrentControllerWater) {
+    if (action.controller != null) {
+      var dayController = state.dayActivityController;
+
+      // If today's date seleted, then change [DayActivityController.waterIntake] to water based on [action.controller] data
+      if (state.dayActivityController.compareDate(DateTime.now()) == 0) {
+        // If completed value more then current goal then decrease completed to goal
+        int completed = action.controller.water.goalToIntake <
+                dayController.waterIntake.completed
+            ? action.controller.water.goalToIntake
+            : dayController.waterIntake.completed;
+
+        var water = WaterIntake(
+          type: action.controller.water.type,
+          goalToIntake: action.controller.water.goalToIntake,
+          completed: completed,
+        );
+
+        dayController = DayActivityController(
+          dayController.todaysDate,
+          tablets: dayController.tabletsIntake,
+          water: water,
+        );
+      }
+
+      return ActivityState(
+        currentActivityController: action.controller,
+        dayActivityController: dayController,
+      );
+    }
+  }
+
   //Return previous state if unknown action
   return state;
 }
@@ -115,12 +163,30 @@ void fetchActionMiddleware(
   ///Read DB and get data by specified date, after that create new controller based on data
   if (action is FetchDataAction) {
     var date = DayActivityController.getPrimitiveDate(action.date);
+    var todaysDate = DayActivityController.getPrimitiveDate(DateTime.now());
 
     //Read info from db
     readDayIntakes(date).then((list) {
       //If instance of water does not exist then create new based on basic
       var water = list[1] ??
           WaterIntake.initOnBasic(store.state.currentActivityController.water);
+
+      /// If [date] is today's then check water data for correctness with [CurrentActivityController.water]
+      /// If data is not correct then update it
+      if (date == todaysDate &&
+          water != store.state.currentActivityController.water) {
+        WaterIntake currentWater = store.state.currentActivityController.water;
+        // Whether completed more then new goal
+        var completed = water.completed > currentWater.goalToIntake
+            ? currentWater.goalToIntake
+            : water.completed;
+
+        water = WaterIntake(
+          completed: completed,
+          goalToIntake: currentWater.goalToIntake,
+          type: currentWater.type,
+        );
+      }
       // If list of tablets from DB is empty then try to create new based on basic
       var tablets = list[0].isNotEmpty
           ? list[0]
@@ -203,6 +269,23 @@ void fetchActionMiddleware(
     // Update tablet in action to change UI
     action = ChangeCompletedTabletsAction(
         dayTime: null, tablet: tablet, index: index);
+  }
+
+  /// Update [CurrentActivityController] with new [WaterIntakes] based on incoming data
+  if (action is UpdateCurrentControllerWater) {
+    CurrentActivityController controller =
+        store.state.currentActivityController;
+    var water = WaterIntake(
+      completed: null,
+      goalToIntake: action.goalToIntake,
+      type: action.type,
+    );
+    controller = CurrentActivityController(water, controller.tablets);
+    // Update action to send it next in reducer
+    action = UpdateCurrentControllerWater(controller: controller);
+
+    // Update data in SharedPrefs
+    controller.saveToLocal();
   }
 
   //Call next reducers
