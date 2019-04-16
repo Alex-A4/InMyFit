@@ -54,6 +54,7 @@ class ChangeCompletedTabletsAction {
   /// This variable needs to identify object in list and update data
   final TabletsIntake tablet;
   final String dayTime;
+
   /// Index of [tablet] in list in [DayActivityController.tabletsIntake]
   final int index;
 
@@ -116,13 +117,27 @@ void fetchActionMiddleware(
     var date = DayActivityController.getPrimitiveDate(action.date);
 
     //Read info from db
-    readDayIntakes(date).then((list) => store.dispatch(FetchDataSuccessAction(
-          DayActivityController(
-            date,
-            tablets: list[0],
-            water: list[1],
-          ),
-        )));
+    readDayIntakes(date).then((list) {
+      //If instance of water does not exist then create new based on basic
+      var water = list[1] ??
+          WaterIntake.initOnBasic(store.state.currentActivityController.water);
+      // If list of tablets from DB is empty then try to create new based on basic
+      var tablets = list[0].isNotEmpty
+          ? list[0]
+          : List.generate(
+              store.state.currentActivityController.tablets.length,
+              (index) => TabletsIntake.initOnBasic(
+                  store.state.currentActivityController.tablets[index]),
+            );
+
+      store.dispatch(FetchDataSuccessAction(
+        DayActivityController(
+          date,
+          tablets: tablets,
+          water: water,
+        ),
+      ));
+    });
   }
 
   /// Update DB instance and update UI
@@ -186,7 +201,8 @@ void fetchActionMiddleware(
       tablet = null;
 
     // Update tablet in action to change UI
-    action = ChangeCompletedTabletsAction(dayTime: null, tablet: tablet, index: index);
+    action = ChangeCompletedTabletsAction(
+        dayTime: null, tablet: tablet, index: index);
   }
 
   //Call next reducers
