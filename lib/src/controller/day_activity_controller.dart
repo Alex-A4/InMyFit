@@ -1,5 +1,6 @@
 import 'package:inmyfit/src/models/tablet_intake.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
+import '../controller/current_activity_controller.dart';
 
 /// This controller describes user activity per one day.
 /// It contains information about today's intake of tablets and water
@@ -20,11 +21,28 @@ class DayActivityController {
   final DateTime todaysDate;
 
   ///Default constructor
-  DayActivityController(date,
-      {WaterIntake water, List<TabletsIntake> tablets})
-      : this.waterIntake = water ?? WaterIntake.init(),
+  /// [water] variable must not be null
+  DayActivityController(date, {WaterIntake water, List<TabletsIntake> tablets})
+      : this.waterIntake = water,
         this.tabletsIntake = tablets ?? [],
         this.todaysDate = getPrimitiveDate(date);
+
+  /// Initialize controller with default values based on [CurrentActivityController] data
+  factory DayActivityController.initFromBasic(
+      CurrentActivityController controller) {
+    var water = WaterIntake.initOnBasic(controller.water);
+
+    List<TabletsIntake> tablets = List.generate(
+      controller.tablets.length,
+      (index) => TabletsIntake.initOnBasic(controller.tablets[index]),
+    );
+    
+    return DayActivityController(
+      DateTime.now(),
+      water: water,
+      tablets: tablets,
+    );
+  }
 
   /// Convert object to JSON
   Map<String, dynamic> toJSON() => {
