@@ -135,6 +135,18 @@ class TabletsIntake {
     return false;
   }
 
+  /// Operator == to compare [other] to this
+  @override
+  bool operator ==(dynamic other) {
+    if (other is! TabletsIntake) return false;
+
+    if (other.name == this.name &&
+        other.dosage == this.dosage &&
+        other.countOfIntakes == this.countOfIntakes) return true;
+
+    return false;
+  }
+
   @override
   String toString() =>
       'dosage : $dosage, name: $name, countOfIntakes: $countOfIntakes'
