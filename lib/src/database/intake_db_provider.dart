@@ -106,8 +106,10 @@ class IntakeDBProvider {
       whereArgs: [time.millisecondsSinceEpoch],
     );
 
+    /// If there is no data about water by [time] then return null
+    /// Reducer must handle that and init instance based on basic
     return response.isEmpty
-        ? WaterIntake.init()
+        ? null
         : WaterIntake.fromJSON(response.first);
   }
 
