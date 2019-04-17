@@ -129,7 +129,7 @@ class _WaterSettingsState extends State<WaterSettings> {
                     //Set up default values and close settings
                     updater(WaterIntakeType.Glasses, 10);
                     Navigator.of(context).pop();
-                  }, 'Рекомендованные приёмы'),
+                  }, 'Рекомендованный приём'),
                   Divider(),
                   getSettingsItem(() {
                     //Go to page to pick goal
@@ -173,7 +173,10 @@ class _WaterSettingsState extends State<WaterSettings> {
 
   /// Page to pick intake goal
   Widget getSecondPage(BuildContext context, Function updater) {
+    var margin = MediaQuery.of(context).size.height - 300;
+
     return Container(
+      margin: EdgeInsets.only(top: margin),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -193,19 +196,19 @@ class _WaterSettingsState extends State<WaterSettings> {
                 FlatButton(
                   child: Text(
                     'Отменить',
-                    style:
-                        page1TS.copyWith(decoration: TextDecoration.underline),
+                    style: page1TS.copyWith(
+                        fontSize: 14.0, decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
                     setState(() => currentPage = 0);
                   },
                 ),
-                Text('Приём воды', style: page1TS),
+                Text('Приём воды', style: page1TS.copyWith(fontSize: 14.0)),
                 FlatButton(
                   child: Text(
                     'Применить',
-                    style:
-                        page1TS.copyWith(decoration: TextDecoration.underline),
+                    style: page1TS.copyWith(
+                        fontSize: 14.0, decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
                     updater(currentType, currentGoal);
@@ -215,6 +218,8 @@ class _WaterSettingsState extends State<WaterSettings> {
               ],
             ),
             Column(
+              mainAxisSize: MainAxisSize.min,
+
               /// Generate list of vessels based on [currentType]
               /// Count of glasses starts with 5, of bottles with 1
               children: List.generate(7, (index) {
@@ -232,20 +237,26 @@ class _WaterSettingsState extends State<WaterSettings> {
   /// Get item of vessels based on [currentType]
   Widget getVesselItem(int count) {
     var style = page1TS;
-    if (currentGoal == count)
-      style = style.copyWith(fontSize: 18.0, fontWeight: FontWeight.w600);
-    return Container(
-      height: 30.0,
-      child: ListTile(
-        title: Text(
-          '$count ${currentType == WaterIntakeType.Glasses ? 'стаканов' : 'бутылок'}',
-          textAlign: TextAlign.center,
-          style: style,
+
+    //If current goal and type equals to data which is set up in time
+    if (currentGoal == count &&
+        currentType == store.state.dayActivityController.waterIntake.type)
+      style = style.copyWith(fontSize: 19.0, fontWeight: FontWeight.w700);
+    return InkWell(
+      child: Container(
+        height: 35.0,
+        width: double.infinity,
+        child: Center(
+          child: Text(
+            '$count ${currentType == WaterIntakeType.Glasses ? 'стаканов' : 'бутылок'}',
+            textAlign: TextAlign.center,
+            style: style,
+          ),
         ),
-        onTap: () {
-          setState(() => currentGoal = count);
-        },
       ),
+      onTap: () {
+        setState(() => currentGoal = count);
+      },
     );
   }
 
