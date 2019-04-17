@@ -32,9 +32,10 @@ class CurrentActivityController {
     if (data != null) {
       Map<String, dynamic> json = _codec.decode(data);
       water = WaterIntake.fromJSON(json['water']);
-      tablets = json['tablets']
-          .map((tablet) => TabletsIntake.fromJSON(tablet))
-          .toList();
+      List tabl = json['tablets'];
+      if (tabl.isNotEmpty)
+        tablets = tabl.map((tablet) => TabletsIntake.fromJSON(tablet)).toList();
+      else tablets = [];
     } else {
       water = WaterIntake.initDefault();
       tablets = [];
