@@ -76,7 +76,7 @@ class WaterReminder extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(WaterSettingsRoute());
+                        Navigator.of(context).push(WaterSettingsRoute(_store));
                       },
                     ),
                   ),
