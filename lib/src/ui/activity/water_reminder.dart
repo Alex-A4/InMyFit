@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
+import 'package:inmyfit/src/ui/activity/water_settings.dart';
 import 'package:redux/redux.dart';
 
 class WaterReminder extends StatelessWidget {
@@ -74,7 +75,9 @@ class WaterReminder extends StatelessWidget {
                           'assets/activity_water/settings.png',
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(WaterSettingsRoute());
+                      },
                     ),
                   ),
                 ],
