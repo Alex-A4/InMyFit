@@ -1,3 +1,5 @@
+import 'package:inmyfit/src/models/date_interval.dart';
+
 import '../models/tablet_intake.dart';
 import '../models/water_intake.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +20,7 @@ class CurrentActivityController {
   ///
   /// Because count of tablets can be more than 1, then [_tablets] is a list of
   /// [TabletsIntake]
-  final List<TabletsIntake> tablets;
+  final Map<DateInterval, TabletsIntake> tablets;
 
   CurrentActivityController(this.water, this.tablets);
 
@@ -27,18 +29,15 @@ class CurrentActivityController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String data = prefs.getString('currentActivity');
     WaterIntake water;
-    List<TabletsIntake> tablets;
+    Map<DateInterval, TabletsIntake> tablets;
 
     if (data != null) {
       Map<String, dynamic> json = _codec.decode(data);
       water = WaterIntake.fromJSON(json['water']);
-      List tabl = json['tablets'];
-      if (tabl.isNotEmpty)
-        tablets = tabl.map((tablet) => TabletsIntake.fromJSON(tablet)).toList();
-      else tablets = [];
+      tablets = tabletsFromJSON(json['tablets']);
     } else {
       water = WaterIntake.initDefault();
-      tablets = [];
+      tablets = {};
     }
 
     return CurrentActivityController(water, tablets);
@@ -47,11 +46,32 @@ class CurrentActivityController {
   /// Save data to local cache used [SharedPreferences]
   Future<void> saveToLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var map = convertToJSON();
+
     String data = _codec.encode({
       'water': water.toJSON(),
-      'tablets': tablets.map((tablet) => tablet.toJSON()).toList()
+      'tablets': map,
     });
 
     await prefs.setString('currentActivity', data);
+  }
+
+  /// Fill map of '[DateInterval] : [TabletsIntake]' pairs from JSON object
+  static Map<DateInterval, TabletsIntake> tabletsFromJSON(Map tabl) {
+    Map<DateInterval, TabletsIntake> tablets = {};
+    if (tabl.isNotEmpty)
+      tabl.forEach((date, tablet) => tablets[DateInterval.fromJSON(date)] =
+          TabletsIntake.fromJSON(tablet));
+
+    return tablets;
+  }
+
+  /// Convert tablets to map with pairs:
+  /// '[DateInterval.toJSON()] : [TabletsIntake.toJSON()]'
+  Map<Map, Map> convertToJSON() {
+    Map<Map, Map> map = {};
+    tablets.forEach((date, tablet) => map[date.toJSON()] = tablet.toJSON());
+    return map;
   }
 }
