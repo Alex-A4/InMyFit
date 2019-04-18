@@ -47,7 +47,7 @@ class CurrentActivityController {
   Future<void> saveToLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var map = convertToJSON();
+    var map = convertTabletsToJSON();
 
     String data = _codec.encode({
       'water': water.toJSON(),
@@ -69,7 +69,7 @@ class CurrentActivityController {
 
   /// Convert tablets to map with pairs:
   /// '[DateInterval.toJSON()] : [TabletsIntake.toJSON()]'
-  Map<Map, Map> convertToJSON() {
+  Map<Map, Map> convertTabletsToJSON() {
     Map<Map, Map> map = {};
     tablets.forEach((date, tablet) => map[date.toJSON()] = tablet.toJSON());
     return map;
