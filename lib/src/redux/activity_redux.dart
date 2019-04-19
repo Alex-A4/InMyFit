@@ -125,29 +125,6 @@ ActivityState activityReducer(ActivityState state, action) {
   /// This action must provide [CurrentActivityController] to update state
   if (action is UpdateCurrentControllerWater) {
     if (action.controller != null) {
-//      var dayController = state.dayActivityController;
-//
-//      // If today's date seleted, then change [DayActivityController.waterIntake] to water based on [action.controller] data
-//      if (state.dayActivityController.compareDate(DateTime.now()) == 0) {
-//        // If completed value more then current goal then decrease completed to goal
-//        int completed = action.controller.water.goalToIntake <
-//                dayController.waterIntake.completed
-//            ? action.controller.water.goalToIntake
-//            : dayController.waterIntake.completed;
-//
-//        var water = WaterIntake(
-//          type: action.controller.water.type,
-//          goalToIntake: action.controller.water.goalToIntake,
-//          completed: completed,
-//        );
-//
-//        dayController = DayActivityController(
-//          dayController.todaysDate,
-//          tablets: dayController.tabletsIntake,
-//          water: water,
-//        );
-//      }
-
       return ActivityState(
         currentActivityController: action.controller,
         dayActivityController: action.dayController,
