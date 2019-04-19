@@ -1,4 +1,5 @@
 import 'package:inmyfit/src/database/intake_db_provider.dart';
+import 'package:inmyfit/src/models/date_interval.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
 import 'package:inmyfit/src/models/tablet_intake.dart';
 
@@ -75,6 +76,22 @@ class UpdateCurrentControllerWater {
 
   UpdateCurrentControllerWater(
       {this.type, this.goalToIntake, this.controller, this.dayController});
+}
+
+/// Action to update old or add new [TabletsIntake] to [CurrentActivityController]
+/// It will try to update instance into DB and if there is no data then add new
+class AddOrUpdateTabletsDataAction {
+  /// Instance that send from middleware to reducer
+  final TabletsIntake tablet;
+
+  // If need to add new instance then [interval] must not be null
+  final DateInterval interval;
+
+  // This controller will be send to reducer from middleware
+  final DayActivityController dayController;
+
+  AddOrUpdateTabletsDataAction(
+      {this.tablet, this.interval, this.dayController});
 }
 
 ///
@@ -178,14 +195,14 @@ void waterActionMiddleware(
               (index) => TabletsIntake.initOnBasic(
                   store.state.currentActivityController.tablets[index]),
             );
-
-      store.dispatch(FetchDataSuccessAction(
-        DayActivityController(
-          date,
-          tablets: tablets,
-          water: water,
-        ),
-      ));
+      var controller = DayActivityController(
+        date,
+        tablets: tablets,
+        water: water,
+      );
+      controller = checkAndMergeDayAndCurrentActivities(
+          controller, store.state.currentActivityController);
+      store.dispatch(FetchDataSuccessAction(controller));
     });
   }
 
@@ -262,6 +279,42 @@ void waterActionMiddleware(
 /// handle actions of [TabletsIntake]
 void tabletsActionMiddleware(
     Store<ActivityState> store, action, NextDispatcher next) async {
+  /// Firstly check data for existing and then add new or update old
+  if (action is AddOrUpdateTabletsDataAction) {
+    var newTablet = action.tablet;
+    var tablets = store.state.currentActivityController.tablets;
+    DateInterval interval;
+    bool changed = false;
+    // If tablets are equals then update data
+    // Two tablets are equals if their names are equals
+    tablets.forEach((date, tablet) {
+      if (tablet == newTablet) {
+        tablets[date] = newTablet;
+        changed = true;
+        interval = date;
+      }
+    });
+
+    // If this is not update action then add new tablet
+    if (!changed) {
+      tablets[action.interval] = newTablet;
+      interval = action.interval;
+    }
+
+    /// If date of [DayActivityController] inside of interval then
+    /// update it's tablets data and action
+    if (interval != null &&
+        interval.isContainsDate(store.state.dayActivityController.todaysDate)) {
+      var dayController = checkAndMergeDayAndCurrentActivities(
+        store.state.dayActivityController,
+        store.state.currentActivityController,
+      );
+      action = AddOrUpdateTabletsDataAction(dayController: dayController);
+    }
+    // Save data to local
+    store.state.currentActivityController.saveToLocal();
+  }
+
   /// Update DB data and UI
   if (action is ChangeCompletedTabletsAction) {
     DayActivityController prev = store.state.dayActivityController;
@@ -342,4 +395,51 @@ Future readDayIntakes(DateTime date) async {
       await Future.wait([db.getTabletsByDate(date), db.getWaterByDate(date)])
           .catchError((error) => print(error));
   return list;
+}
+
+/// Check is [currentController] contains some information about tablets
+/// by specified date that [dayController] don't
+/// And if it's true then copy some [TabletsIntake] instances to [DayActivityController]
+DayActivityController checkAndMergeDayAndCurrentActivities(
+    DayActivityController dayController,
+    CurrentActivityController currentController) {
+  List<TabletsIntake> newTablets = [];
+
+  currentController.tablets.forEach((date, tablet) {
+    if (date.isContainsDate(dayController.todaysDate))
+      dayController.tabletsIntake.forEach((dayTablet) {
+        // If names of tablets is equals and data not equals then update data
+        // else if names equals then copy old data else create new instance
+        if (tablet == dayTablet && !isTabletsEquals(tablet, dayTablet))
+          newTablets.add(TabletsIntake(
+            dosage: tablet.dosage,
+            countOfIntakes: tablet.countOfIntakes,
+            name: tablet.name,
+            //Completed will be fixed in constructor
+            completed: dayTablet.completed,
+          ));
+        //Copy data
+        else if (tablet == dayTablet)
+          newTablets.add(dayTablet);
+        //Create new instance if tablets was not exist
+        else
+          newTablets.add(TabletsIntake(
+            name: tablet.name,
+            countOfIntakes: tablet.countOfIntakes,
+            dosage: tablet.dosage,
+          ));
+      });
+  });
+
+  return DayActivityController(
+    dayController.todaysDate,
+    water: dayController.waterIntake,
+    tablets: newTablets,
+  );
+}
+
+/// Check whether data of [tablet1] equals to data of [tablet2]
+bool isTabletsEquals(TabletsIntake tablet1, TabletsIntake tablet2) {
+  return tablet1.dosage == tablet2.dosage &&
+      tablet1.countOfIntakes == tablet2.countOfIntakes;
 }
