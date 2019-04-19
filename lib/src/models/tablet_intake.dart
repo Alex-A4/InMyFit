@@ -33,7 +33,8 @@ class TabletsIntake {
         dosage: dosage,
         name: name,
         countOfIntakes: countOfIntakes,
-        completed: completed ?? getDefaultCompleted(countOfIntakes));
+        completed: fixCompleted(completed, countOfIntakes) ??
+            getDefaultCompleted(countOfIntakes));
   }
 
   /// Factory to create instance based on [basic] that got from CurrentActivityController
@@ -61,6 +62,22 @@ class TabletsIntake {
     if (count >= 2) map['evening'] = false;
 
     return map;
+  }
+
+  /// Fix [completed] variable if [countOfIntakes] was changed
+  static Map<String, bool> fixCompleted(
+      Map<String, bool> prevCompleted, int countOfIntakes) {
+    if (prevCompleted == null) return null;
+
+    Map newCompleted = {};
+    if (countOfIntakes >= 1)
+      newCompleted['morning'] = prevCompleted['morning'] ?? false;
+    if (countOfIntakes >= 2)
+      newCompleted['evening'] = prevCompleted['evening'] ?? false;
+    if (countOfIntakes >= 3)
+      newCompleted['afternoon'] = prevCompleted['afternoon'] ?? false;
+
+    return newCompleted;
   }
 
   ///Factory to restore object from JSON
