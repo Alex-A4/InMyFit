@@ -136,13 +136,13 @@ class TabletsIntake {
   }
 
   /// Operator == to compare [other] to this
+  /// Two tablets are equals if they names are
+  /// This needs to check containing tablets after creating or updating
   @override
   bool operator ==(dynamic other) {
     if (other is! TabletsIntake) return false;
 
-    if (other.name == this.name &&
-        other.dosage == this.dosage &&
-        other.countOfIntakes == this.countOfIntakes) return true;
+    if (other.name == this.name) return true;
 
     return false;
   }
