@@ -77,6 +77,14 @@ class UpdateCurrentControllerWater {
       {this.type, this.goalToIntake, this.controller, this.dayController});
 }
 
+///
+///
+///
+/// MAIN REDUCER
+///
+///
+///
+
 /// Redux reducer to communicate between UI and store
 ActivityState activityReducer(ActivityState state, action) {
   if (action is FetchDataAction)
@@ -136,8 +144,16 @@ ActivityState activityReducer(ActivityState state, action) {
   return state;
 }
 
+///
+///
+///
+/// WATER MIDDLEWARE
+///
+///
+
 /// Redux middleware function to communicate with DB
-void fetchActionMiddleware(
+/// and handle actions depends on [WaterIntake]
+void waterActionMiddleware(
     Store<ActivityState> store, action, NextDispatcher next) async {
   ///Read DB and get data by specified date, after that create new controller based on data
   if (action is FetchDataAction) {
@@ -200,6 +216,52 @@ void fetchActionMiddleware(
     }
   }
 
+  /// Update [CurrentActivityController] with new [WaterIntakes] based on incoming data
+  if (action is UpdateCurrentControllerWater) {
+    CurrentActivityController controller =
+        store.state.currentActivityController;
+    DayActivityController dayController = store.state.dayActivityController;
+
+    // Updated water of CurrentActivityController
+    var water = WaterIntake(
+      completed: null,
+      goalToIntake: action.goalToIntake,
+      type: action.type,
+    );
+    controller = CurrentActivityController(water, controller.tablets);
+
+    //Update water of DayActivityController if there is today's date
+    var waterDay = fixWaterByDate(
+        dayController.todaysDate, dayController.waterIntake, controller);
+
+    // Update action to send it next in reducer
+    action = UpdateCurrentControllerWater(
+      controller: controller,
+      dayController: DayActivityController(dayController.todaysDate,
+          water: waterDay, tablets: dayController.tabletsIntake),
+    );
+
+    // Update data in SharedPrefs and in DB
+    controller.saveToLocal();
+    IntakeDBProvider.db.updateWaterIntake(waterDay, dayController.todaysDate);
+  }
+
+  //Call next reducers
+  next(action);
+}
+
+///
+///
+///
+/// TABLETS MIDDLEWARE
+///
+///
+///
+
+/// Redux middleware to function to communicate with DB and
+/// handle actions of [TabletsIntake]
+void tabletsActionMiddleware(
+    Store<ActivityState> store, action, NextDispatcher next) async {
   /// Update DB data and UI
   if (action is ChangeCompletedTabletsAction) {
     DayActivityController prev = store.state.dayActivityController;
@@ -238,39 +300,17 @@ void fetchActionMiddleware(
         dayTime: null, tablet: tablet, index: index);
   }
 
-  /// Update [CurrentActivityController] with new [WaterIntakes] based on incoming data
-  if (action is UpdateCurrentControllerWater) {
-    CurrentActivityController controller =
-        store.state.currentActivityController;
-    DayActivityController dayController = store.state.dayActivityController;
-
-    // Updated water of CurrentActivityController
-    var water = WaterIntake(
-      completed: null,
-      goalToIntake: action.goalToIntake,
-      type: action.type,
-    );
-    controller = CurrentActivityController(water, controller.tablets);
-
-    //Update water of DayActivityController if there is today's date
-    var waterDay = fixWaterByDate(
-        dayController.todaysDate, dayController.waterIntake, controller);
-
-    // Update action to send it next in reducer
-    action = UpdateCurrentControllerWater(
-      controller: controller,
-      dayController: DayActivityController(dayController.todaysDate,
-          water: waterDay, tablets: dayController.tabletsIntake),
-    );
-
-    // Update data in SharedPrefs and in DB
-    controller.saveToLocal();
-    IntakeDBProvider.db.updateWaterIntake(waterDay, dayController.todaysDate);
-  }
-
-  //Call next reducers
+  /// Required call of next middleware or reducer
   next(action);
 }
+
+///
+///
+///
+/// SUPPORT'S FUNCTIONS
+///
+///
+///
 
 /// If [date] is today's then check water data for correctness with [CurrentActivityController.water]
 /// If data is not correct then update it

@@ -36,7 +36,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
           dayActivityController: dayController,
           currentActivityController: currentController,
         ),
-        middleware: [fetchActionMiddleware],
+        middleware: [waterActionMiddleware, tabletsActionMiddleware],
       );
 
       yield StateActivityLog(activityStore);
