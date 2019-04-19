@@ -11,15 +11,15 @@ class CurrentActivityController {
   ///Codec to convert to/from json string
   static JsonCodec _codec = JsonCodec();
 
-  ///Info about water, [WaterIntake.completed] parameter must be null
+  ///Info about water, [WaterIntake.completed] parameter doesn't matter
   /// If the app launched first and user have no activity then create default
   final WaterIntake water;
 
-  ///Info about tablets, [TabletsIntake.completed] parameter must be null
+  ///Info about tablets, [TabletsIntake.completed] parameter doesn't matter
   /// If the app launched first and user have no activity then it's null
   ///
-  /// Because count of tablets can be more than 1, then [_tablets] is a list of
-  /// [TabletsIntake]
+  /// Because count of tablets can be more than 1, then [tablets] is a map of
+  /// [TabletsIntake] that uses by [DateInterval]
   final Map<DateInterval, TabletsIntake> tablets;
 
   CurrentActivityController(this.water, this.tablets);
