@@ -16,34 +16,24 @@ class IntakeDBProvider {
   //Singleton instance
   static final IntakeDBProvider db = IntakeDBProvider._();
 
-  /// Database to store information about [WaterIntake] objects
-  Database _waterDatabase;
+  /// Database to store information about [WaterIntake] and [TabletsIntake] objects
+  Database _database;
 
-  /// Database to store information about [TabletsIntake] objects
-  Database _tabletsDatabase;
+  Future<Database> get database async {
+    if (_database == null) _database = await getDBInstance();
 
-  Future<Database> get waterDb async {
-    if (_waterDatabase == null) _waterDatabase = await getWaterDBInstance();
-
-    return _waterDatabase;
+    return _database;
   }
-
-  Future<Database> get tabletsDb async {
-    if (_tabletsDatabase == null)
-      _tabletsDatabase = await getTabletsDBInstance();
-
-    return _tabletsDatabase;
-  }
-
-  ///
-  /// Water DB section
-  ///
 
   ///Get the instance of DB where [WaterIntake] stores by date
   /// date stores in [millisecondsSinceEpoch] to restore [DateTime] object
-  Future<Database> getWaterDBInstance() async {
+  ///
+  /// [TabletsIntake] sorts by date
+  /// date stores in [millisecondsSinceEpoch] to restore [DateTime] object
+  /// completed values stores like String objects,
+  /// for more information see [TabletsIntake.completed]
+  Future<Database> getDBInstance() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    print(directory.path);
     String path = join(directory.path, 'data.db');
 
     return await openDatabase(path, version: 1,
@@ -56,12 +46,26 @@ class IntakeDBProvider {
             "completed INTEGER"
             ")",
       );
+      await db.execute(
+        "CREATE TABLE Tablets ("
+            "date INTEGER NOT NULL,"
+            "name TEXT NOT NULL,"
+            "dosage INTEGER,"
+            "countOfIntakes INTEGER,"
+            "completed TEXT,"
+            "PRIMARY KEY(date, name)"
+            ")",
+      );
     });
   }
 
+  ///
+  /// Water DB section
+  ///
+
   /// Add new instance of [WaterIntake] to DB. [time] variable must be primitive
   Future addWaterIntakeToDB(WaterIntake water, DateTime time) async {
-    final db = await waterDb;
+    final db = await database;
     Map<String, dynamic> data = water.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
 
@@ -76,7 +80,7 @@ class IntakeDBProvider {
 
   /// Update the instance of [WaterIntake] into DB. [time] variable must be primitive
   Future updateWaterIntake(WaterIntake water, DateTime time) async {
-    final db = await waterDb;
+    final db = await database;
     Map<String, dynamic> data = water.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
 
@@ -96,7 +100,7 @@ class IntakeDBProvider {
   /// If [response] is empty then return default instance else return first object
   /// in DB.
   Future<WaterIntake> getWaterByDate(DateTime time) async {
-    final db = await waterDb;
+    final db = await database;
     var response = await db.query(
       'Water',
       where: 'date = ?',
@@ -109,8 +113,8 @@ class IntakeDBProvider {
   }
 
   /// Delete whole [WaterIntake] database. Be careful using it!
-  Future deleteWaterDB() async {
-    final db = await waterDb;
+  Future deleteWaterTable() async {
+    final db = await database;
     db.delete('Water');
   }
 
@@ -118,33 +122,9 @@ class IntakeDBProvider {
   /// Tablets DB section
   ///
 
-  ///Get the instance of DB where [TabletsIntake] sorts by date
-  /// date stores in [millisecondsSinceEpoch] to restore [DateTime] object
-  ///
-  /// completed values stores like String objects,
-  /// for more information see [TabletsIntake.completed]
-  Future<Database> getTabletsDBInstance() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, 'data.db');
-
-    return await openDatabase(path, version: 1,
-        onCreate: (Database db, int vers) async {
-      await db.execute(
-        "CREATE TABLE Tablets ("
-            "date INTEGER NOT NULL,"
-            "name TEXT NOT NULL,"
-            "dosage INTEGER,"
-            "countOfIntakes INTEGER,"
-            "completed TEXT,"
-            "PRIMARY KEY(date, name)"
-            ")",
-      );
-    });
-  }
-
   /// Add new instance of [TabletsIntake] to DB. [time] variable must be primitive
   Future addTabletsIntakeToDB(TabletsIntake tablets, DateTime time) async {
-    final db = await tabletsDb;
+    final db = await database;
     Map<String, dynamic> data = tablets.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
 
@@ -160,7 +140,7 @@ class IntakeDBProvider {
   /// Update the instance of [TabletsIntake] into DB. [date] variable must be primitive
   /// Updating occurs with [date] and [tablet.name] parameters
   Future updateTabletsIntake(TabletsIntake tablet, DateTime date) async {
-    final db = await tabletsDb;
+    final db = await database;
     Map<String, dynamic> data = tablet.toJSON();
     data['date'] = date.millisecondsSinceEpoch;
 
@@ -180,7 +160,7 @@ class IntakeDBProvider {
   /// be primitive.
   /// If [response] is empty then return empty list else return list of tablets
   Future<List<TabletsIntake>> getTabletsByDate(DateTime time) async {
-    final db = await tabletsDb;
+    final db = await database;
 
     var response = await db.query(
       'Tablets',
@@ -194,8 +174,8 @@ class IntakeDBProvider {
   }
 
   /// Delete whole [TabletsIntake] database. Be careful using it!
-  Future deleteTabletsDB() async {
-    final db = await tabletsDb;
+  Future deleteTabletsTable() async {
+    final db = await database;
     db.delete('Tablets');
   }
 }
