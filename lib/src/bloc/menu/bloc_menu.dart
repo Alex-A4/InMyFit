@@ -52,4 +52,10 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
     if (event is EventShop) yield StateShop();
   }
+
+  @override
+  void dispose() {
+    closeDB();
+    super.dispose();
+  }
 }

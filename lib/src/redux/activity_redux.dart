@@ -443,3 +443,8 @@ bool isTabletsEquals(TabletsIntake tablet1, TabletsIntake tablet2) {
   return tablet1.dosage == tablet2.dosage &&
       tablet1.countOfIntakes == tablet2.countOfIntakes;
 }
+
+// Close the DB
+void closeDB() {
+  IntakeDBProvider.db.closeDB().catchError((error) => print(error));
+}

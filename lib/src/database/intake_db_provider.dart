@@ -178,4 +178,11 @@ class IntakeDBProvider {
     final db = await database;
     db.delete('Tablets');
   }
+
+  /// Close the DB if it was not
+  Future closeDB() async {
+    final db = await database;
+    if (db.isOpen)
+      await db.close();
+  }
 }
