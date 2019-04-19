@@ -26,4 +26,11 @@ class DateInterval {
         startDate: DateTime.parse(date['start']),
         endDate: DateTime.parse(date['end']),
       );
+
+  /// Check is 'this' [DateInterval] contains [other] date
+  bool isContainsDate(DateTime other) {
+    if (startDate.isBefore(other) && endDate.isAfter(other))
+      return true;
+    else return false;
+  }
 }
