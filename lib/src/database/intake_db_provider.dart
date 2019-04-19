@@ -43,7 +43,8 @@ class IntakeDBProvider {
   /// date stores in [millisecondsSinceEpoch] to restore [DateTime] object
   Future<Database> getWaterDBInstance() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, 'waterDB.db');
+    print(directory.path);
+    String path = join(directory.path, 'data.db');
 
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int vers) async {
@@ -79,17 +80,13 @@ class IntakeDBProvider {
     Map<String, dynamic> data = water.toJSON();
     data['date'] = time.millisecondsSinceEpoch;
 
-    var response = await db.update(
-      'Water',
-      data,
-      where: 'date = ?',
-      whereArgs: [data['date']],
-      conflictAlgorithm: ConflictAlgorithm.replace
-    );
+    var response = await db.update('Water', data,
+        where: 'date = ?',
+        whereArgs: [data['date']],
+        conflictAlgorithm: ConflictAlgorithm.replace);
 
     //If record is absent in DB
-    if (response == 0)
-      await addWaterIntakeToDB(water, time);
+    if (response == 0) await addWaterIntakeToDB(water, time);
 
     return response;
   }
@@ -108,9 +105,7 @@ class IntakeDBProvider {
 
     /// If there is no data about water by [time] then return null
     /// Reducer must handle that and init instance based on basic
-    return response.isEmpty
-        ? null
-        : WaterIntake.fromJSON(response.first);
+    return response.isEmpty ? null : WaterIntake.fromJSON(response.first);
   }
 
   /// Delete whole [WaterIntake] database. Be careful using it!
@@ -130,7 +125,7 @@ class IntakeDBProvider {
   /// for more information see [TabletsIntake.completed]
   Future<Database> getTabletsDBInstance() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, 'tabletsDB.db');
+    String path = join(directory.path, 'data.db');
 
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int vers) async {
@@ -162,22 +157,22 @@ class IntakeDBProvider {
     return raw;
   }
 
-  /// Update the instance of [TabletsIntake] into DB. [time] variable must be primitive
-  Future updateTabletsIntake(TabletsIntake tablets, DateTime time) async {
+  /// Update the instance of [TabletsIntake] into DB. [date] variable must be primitive
+  /// Updating occurs with [date] and [tablet.name] parameters
+  Future updateTabletsIntake(TabletsIntake tablet, DateTime date) async {
     final db = await tabletsDb;
-    Map<String, dynamic> data = tablets.toJSON();
-    data['date'] = time.millisecondsSinceEpoch;
+    Map<String, dynamic> data = tablet.toJSON();
+    data['date'] = date.millisecondsSinceEpoch;
 
     var response = await db.update(
       'Tablets',
       data,
-      where: 'date = ?',
-      whereArgs: [data['date']],
+      where: 'date = ?, name = ?',
+      whereArgs: [data['date'], data['name']],
     );
 
     //If record is absent in DB
-    if (response == 0)
-      addTabletsIntakeToDB(tablets, time);
+    if (response == 0) addTabletsIntakeToDB(tablet, date);
     return response;
   }
 
