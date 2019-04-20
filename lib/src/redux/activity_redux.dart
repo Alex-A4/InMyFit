@@ -157,6 +157,16 @@ ActivityState activityReducer(ActivityState state, action) {
     }
   }
 
+  /// This action must provide [DayActivityController] to update state with
+  /// updated data
+  if (action is AddOrUpdateTabletsDataAction) {
+    if (action.dayController != null)
+      return ActivityState(
+        currentActivityController: state.currentActivityController,
+        dayActivityController: action.dayController,
+      );
+  }
+
   //Return previous state if unknown action
   return state;
 }
