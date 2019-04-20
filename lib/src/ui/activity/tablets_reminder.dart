@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:inmyfit/src/ui/activity/tablets_settings.dart';
 import 'package:redux/redux.dart';
 import '../../redux/activity_redux.dart';
 import 'package:expandable/expandable.dart';
@@ -39,7 +40,10 @@ class TabletsReminder extends StatelessWidget {
                       'assets/activity_water/settings.png',
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => TabletsSettings(store: _store)));
+                  },
                 ),
               ),
             ],
