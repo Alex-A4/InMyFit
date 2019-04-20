@@ -104,6 +104,7 @@ class AddOrUpdateTabletsDataAction {
 
 /// Redux reducer to communicate between UI and store
 ActivityState activityReducer(ActivityState state, action) {
+  ///Start fetching data and show some indicator
   if (action is FetchDataAction)
     return ActivityState(
       currentActivityController: state.currentActivityController,
@@ -111,6 +112,8 @@ ActivityState activityReducer(ActivityState state, action) {
       //Start fetching to show spinner
       isFetching: true,
     );
+
+  ///Stop fetching and show data
   if (action is FetchDataSuccessAction)
     return ActivityState(
       currentActivityController: state.currentActivityController,
@@ -119,6 +122,7 @@ ActivityState activityReducer(ActivityState state, action) {
       isFetching: false,
     );
 
+  /// Update [DayActivityController] depends on new instance of [action.water]
   if (action is ChangeCompletedWaterAction) {
     //If it's modified water then update state
     if (action.water != null)
@@ -132,6 +136,8 @@ ActivityState activityReducer(ActivityState state, action) {
       );
   }
 
+  /// Update instance of tablet in list by provided [action.index]
+  /// This index indicate previous instance of tablet in list that need update
   if (action is ChangeCompletedTabletsAction) {
     if (action.tablet != null) {
       var list = state.dayActivityController.tabletsIntake;
