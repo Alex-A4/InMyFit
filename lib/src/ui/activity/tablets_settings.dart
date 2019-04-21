@@ -66,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           flexibleSpace: Container(
             margin: const EdgeInsets.only(top: 40.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 InkWell(
                   onTap: () => Navigator.of(context).pop(),
