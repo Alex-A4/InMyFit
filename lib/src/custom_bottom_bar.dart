@@ -67,8 +67,7 @@ class _MyFitAppBarState extends State<MyFitAppBar> {
       height: widget.height,
       child: Material(
         type: MaterialType.transparency,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(25.0),
+        child: GestureDetector(
           onTap: () => onPressed(index),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
