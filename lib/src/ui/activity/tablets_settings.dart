@@ -163,13 +163,13 @@ class _TabletsSettingsState extends State<TabletsSettings> {
                 ),
               ),
             ),
-            onTap: () => setState(() => ++countOfIntakes),
+            onTap: showCountOfIntakesSelecter,
           ),
           SizedBox(height: 20.0),
           Container(
               padding: padding,
-              child: Text('Сколько таблеток за один приём',
-                  style: subtitleStyle)),
+              child:
+                  Text('Сколько таблеток за один приём', style: subtitleStyle)),
           InkWell(
             child: Container(
               height: 50.0,
@@ -184,7 +184,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
                 ),
               ),
             ),
-            onTap: () => setState(() => ++dosage),
+            onTap: showDosageSelecter,
           ),
         ],
       ),
@@ -235,6 +235,58 @@ class _TabletsSettingsState extends State<TabletsSettings> {
         ),
       ],
     );
+  }
+
+  /// Show bottom sheet dialog to select [countOfIntakes] variable
+  void showCountOfIntakesSelecter() {
+    Scaffold.of(context).showBottomSheet((context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            ListTile(
+              title: Text('Выберите количество приёмов',
+                  style: mainTextStyle, textAlign: TextAlign.center),
+              subtitle: Text('Сколько раз в день принимать медикамент',
+                  style: mainTextStyle.copyWith(fontSize: 15.0),
+                  textAlign: TextAlign.center),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: List.generate(3, (index) {
+                return ListTile(
+                  title: Text('${index + 1} раза в день',
+                      style: mainTextStyle, textAlign: TextAlign.center),
+                  onTap: () => setState(() => countOfIntakes = index + 1),
+                );
+              }),
+            ),
+          ],
+        ));
+  }
+
+  /// Show bottom sheet dialog to select [dosage] variable
+  void showDosageSelecter() {
+    Scaffold.of(context).showBottomSheet((context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            ListTile(
+              title: Text('Выберите количество',
+                  style: mainTextStyle, textAlign: TextAlign.center),
+              subtitle: Text('Сколько количетство таблеток за один приём',
+                  style: mainTextStyle.copyWith(fontSize: 15.0),
+                  textAlign: TextAlign.center),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return ListTile(
+                  title: Text('${index + 1}',
+                      style: mainTextStyle, textAlign: TextAlign.center),
+                  onTap: () => setState(() => dosage = index + 1),
+                );
+              }),
+            ),
+          ],
+        ));
   }
 
   var coursesStyle = TextStyle(
