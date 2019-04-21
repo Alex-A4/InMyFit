@@ -42,19 +42,24 @@ class _WaterSettingsState extends State<WaterSettings> {
   Store<ActivityState> get store => widget.store;
 
   int currentGoal;
+
+  /// Type that user set up on first page
   WaterIntakeType currentType;
 
+  /// Type that user select by tapping on vessels
+  WaterIntakeType selectedType;
   Function updater;
 
-  /// 0 value is start page
-  /// 1 value is goalIntake picker
-  int currentPage = 0;
+  /// 1 value is start page
+  /// 2 value is goalIntake picker
+  int currentPage = 1;
 
   @override
   void initState() {
     super.initState();
     currentGoal = store.state.currentActivityController.water.goalToIntake;
     currentType = store.state.currentActivityController.water.type;
+    selectedType = currentType;
 
     updater = (WaterIntakeType type, int goal) =>
         store.dispatch(UpdateCurrentControllerWater(
@@ -65,7 +70,7 @@ class _WaterSettingsState extends State<WaterSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return currentPage == 0
+    return currentPage == 1
         ? getFirstPage(context, updater)
         : getSecondPage(context, updater);
   }
@@ -133,7 +138,7 @@ class _WaterSettingsState extends State<WaterSettings> {
                   Divider(),
                   getSettingsItem(() {
                     //Go to page to pick goal
-                    setState(() => currentPage = 1);
+                    setState(() => currentPage = 2);
                   }, 'Выбрать цель'),
                   Divider(),
                   getSettingsItem(() {
@@ -200,7 +205,7 @@ class _WaterSettingsState extends State<WaterSettings> {
                         fontSize: 14.0, decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    setState(() => currentPage = 0);
+                    setState(() => currentPage = 1);
                   },
                 ),
                 Text('Приём воды', style: page1TS.copyWith(fontSize: 14.0)),
@@ -211,7 +216,7 @@ class _WaterSettingsState extends State<WaterSettings> {
                         fontSize: 14.0, decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    updater(currentType, currentGoal);
+                    updater(selectedType, currentGoal);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -239,8 +244,7 @@ class _WaterSettingsState extends State<WaterSettings> {
     var style = page1TS;
 
     //If current goal and type equals to data which is set up in time
-    if (currentGoal == count &&
-        currentType == store.state.dayActivityController.waterIntake.type)
+    if (currentGoal == count && currentType == selectedType)
       style = style.copyWith(fontSize: 19.0, fontWeight: FontWeight.w700);
     return InkWell(
       child: Container(
@@ -255,7 +259,10 @@ class _WaterSettingsState extends State<WaterSettings> {
         ),
       ),
       onTap: () {
-        setState(() => currentGoal = count);
+        setState(() {
+          currentGoal = count;
+          selectedType = currentType;
+        });
       },
     );
   }
