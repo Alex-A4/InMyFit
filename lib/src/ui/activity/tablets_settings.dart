@@ -113,11 +113,11 @@ class _TabletsSettingsState extends State<TabletsSettings> {
               if (text.isEmpty) return 'Введите название';
             },
             style: mainTextStyle,
+            // Allow to modify name only on first step
+            enabled: settingsStep == 1,
             decoration: InputDecoration(
                 hintText: 'Введите название',
                 hintStyle: hintStyle,
-                // Allow to modify name only on first step
-                enabled: settingsStep == 1 ? true : false,
                 focusedBorder: UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: Colors.transparent, width: 0.0)),
