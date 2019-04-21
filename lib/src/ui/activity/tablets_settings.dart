@@ -46,24 +46,33 @@ class _TabletsSettingsState extends State<TabletsSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: GradientAppBar(
-        automaticallyImplyLeading: false,
-        leading: FlatButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text('Отмена', style: appBarStyle),
-        ),
-        title: Text('Настройки таблеток', style: appBarStyle),
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () => setState(() {
-                  if (_formKey.currentState.validate()) ++settingsStep;
-                }),
-            child: Text('Дальше', style: appBarStyle),
+      appBar: PreferredSize(
+        preferredSize: Size(double.infinity, 45.0),
+        child: GradientAppBar(
+          flexibleSpace: Container(
+            margin: const EdgeInsets.only(top: 40.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Отмена', style: appBarStyle),
+                ),
+                Text('Настройки таблеток', style: appBarStyle),
+                FlatButton(
+                  onPressed: () => setState(() {
+                        if (_formKey.currentState.validate()) ++settingsStep;
+                      }),
+                  child: Text('Дальше', style: appBarStyle),
+                ),
+              ],
+            ),
           ),
-        ],
-        backgroundColorStart: theme.primaryColor,
-        backgroundColorEnd: theme.primaryColorLight,
-        centerTitle: true,
+          automaticallyImplyLeading: false,
+          backgroundColorStart: theme.primaryColor,
+          backgroundColorEnd: theme.primaryColorLight,
+          centerTitle: true,
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -173,11 +182,18 @@ class _TabletsSettingsState extends State<TabletsSettings> {
       fontSize: 17.0, color: Colors.grey[350], fontFamily: 'ProstoSans');
   var appBarStyle = TextStyle(
       color: Colors.white,
-      fontSize: 14.0,
+      fontSize: 16.0,
+      fontFamily: 'ProstoSans',
+      fontWeight: FontWeight.w500);
+  var mainTextStyle = TextStyle(
+      fontSize: 18.0,
+      color: Colors.black87,
       fontFamily: 'Neue',
       fontWeight: FontWeight.w700);
-  var mainTextStyle = TextStyle(fontSize: 18.0, color: Colors.black87, fontFamily: 'Neue', fontWeight: FontWeight.w700);
   var hintStyle = TextStyle(fontSize: 18.0, color: Colors.red[400]);
   var subtitleStyle = TextStyle(
-      fontSize: 14.0, color: Colors.grey[500], fontFamily: 'ProstoSans');
+      fontWeight: FontWeight.w400,
+      fontSize: 14.0,
+      color: Colors.grey[600],
+      fontFamily: 'ProstoSans');
 }
