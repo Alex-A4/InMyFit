@@ -37,10 +37,10 @@ class _TabletsSettingsState extends State<TabletsSettings> {
   TextEditingController nameController = TextEditingController();
 
   /// How many pills per one intake
-  int dosage;
+  int dosage = 0;
 
   /// How many times per day need to intake tablet
-  int countOfIntakes;
+  int countOfIntakes = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +83,11 @@ class _TabletsSettingsState extends State<TabletsSettings> {
               child: Column(
                 children: <Widget>[
                   getNameEditor(),
+                  settingsStep == 2 ? getDosageAndCountInput() : Container(),
                 ],
               ),
             ),
-            getActiveCourses(),
+            settingsStep == 1 ? getActiveCourses() : Container(),
           ],
         ),
       ),
@@ -104,6 +105,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text('Название препарата', style: subtitleStyle)),
         Container(
+          height: 50.0,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           color: Colors.white,
           child: TextFormField(
@@ -115,7 +117,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
                 hintText: 'Введите название',
                 hintStyle: hintStyle,
                 // Allow to modify name only on first step
-                enabled: settingsStep == 1,
+                enabled: settingsStep == 1 ? true : false,
                 focusedBorder: UnderlineInputBorder(
                     borderSide:
                         BorderSide(color: Colors.transparent, width: 0.0)),
@@ -129,6 +131,63 @@ class _TabletsSettingsState extends State<TabletsSettings> {
           ),
         ),
       ],
+    );
+  }
+
+  /// If user input name then show field to input dosage and count of intakes
+  Widget getDosageAndCountInput() {
+    var padding = const EdgeInsets.only(left: 16.0);
+    return Material(
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 20.0),
+          Container(
+              padding: padding,
+              child:
+                  Text('Как часто принимать таблетки', style: subtitleStyle)),
+          InkWell(
+            child: Container(
+              height: 50.0,
+              width: double.infinity,
+              padding: padding,
+              color: Colors.white,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  countOfIntakes == 0
+                      ? 'Количество приёмов'
+                      : '$countOfIntakes раз',
+                  style: countOfIntakes == 0 ? hintStyle : mainTextStyle,
+                ),
+              ),
+            ),
+            onTap: () => setState(() => ++countOfIntakes),
+          ),
+          SizedBox(height: 20.0),
+          Container(
+              padding: padding,
+              child: Text('Сколько таблеток за один приём',
+                  style: subtitleStyle)),
+          InkWell(
+            child: Container(
+              height: 50.0,
+              width: double.infinity,
+              color: Colors.white,
+              padding: padding,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  dosage == 0 ? 'Дозировка' : '$dosage штук',
+                  style: dosage == 0 ? hintStyle : mainTextStyle,
+                ),
+              ),
+            ),
+            onTap: () => setState(() => ++dosage),
+          ),
+        ],
+      ),
     );
   }
 
