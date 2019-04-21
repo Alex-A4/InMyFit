@@ -46,7 +46,6 @@ class CalendarWidget extends StatelessWidget {
                 dateStr = dateStr.replaceAll(first, first.toUpperCase());
                 return dateStr;
               },
-              centerHeaderTitle: true,
               leftChevronIcon: Icon(
                 Icons.keyboard_arrow_left,
                 size: 30.0,
@@ -78,5 +77,5 @@ class CalendarWidget extends StatelessWidget {
   }
 
   static final greyColor = Colors.grey[500];
-  final dayTextStyle = TextStyle(color: greyColor, fontSize: 24.0, fontFamily: 'ProstoSans');
+  final dayTextStyle = TextStyle(color: greyColor, fontSize: 21.0, fontFamily: 'ProstoSans');
 }
