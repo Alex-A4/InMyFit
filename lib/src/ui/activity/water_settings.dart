@@ -77,11 +77,17 @@ class _WaterSettingsState extends State<WaterSettings> {
 
   /// Widget for displaying items of route
   Widget getSettingsItem(Function onTap, String text) {
-    return ListTile(
-      title: Text(
-        text,
-        style: textStyle,
-        textAlign: TextAlign.center,
+    return InkWell(
+      child: Container(
+        height: 35.0,
+        width: double.infinity,
+        child: Center(
+          child: Text(
+            text,
+            style: textStyle,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
       onTap: onTap,
     );
@@ -108,7 +114,7 @@ class _WaterSettingsState extends State<WaterSettings> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 16.0),
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[

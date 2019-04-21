@@ -68,13 +68,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                FlatButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                InkWell(
+                  onTap: () => Navigator.of(context).pop(),
                   child: Text('Отмена', style: appBarStyle),
                 ),
                 Text('Настройки таблеток', style: appBarStyle),
-                FlatButton(
-                  onPressed: () => setState(() {
+                InkWell(
+                  onTap: () => setState(() {
                         if (_formKey.currentState.validate()) ++settingsStep;
                       }),
                   child: Text('Дальше', style: appBarStyle),

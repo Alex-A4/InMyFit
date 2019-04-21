@@ -63,29 +63,27 @@ class _MyFitAppBarState extends State<MyFitAppBar> {
         ? widget.activeIconColor
         : widget.inactiveIconColor;
 
-    return Expanded(
-      child: SizedBox(
-        height: widget.height,
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(25.0),
-            onTap: () => onPressed(index),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ImageIcon(
-                  AssetImage(item.icon),
-                  color: color,
-                  size: widget.iconSize,
-                ),
-                Text(
-                  item.title,
-                  style: TextStyle(color: color, fontSize: 14.0),
-                ),
-              ],
-            ),
+    return SizedBox(
+      height: widget.height,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(25.0),
+          onTap: () => onPressed(index),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ImageIcon(
+                AssetImage(item.icon),
+                color: color,
+                size: widget.iconSize,
+              ),
+              Text(
+                item.title,
+                style: TextStyle(color: color, fontSize: 14.0),
+              ),
+            ],
           ),
         ),
       ),
