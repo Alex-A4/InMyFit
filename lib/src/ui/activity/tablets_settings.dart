@@ -7,17 +7,31 @@ import 'package:redux/redux.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/cupertino.dart';
 
-class TabletsSettings extends StatefulWidget {
+class TabletsSettings extends StatelessWidget {
   final Store<ActivityState> store;
 
   TabletsSettings({Key key, this.store}) : super(key: key);
 
   @override
-  _TabletsSettingsState createState() => _TabletsSettingsState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SettingsScreen(store: store),
+    );
+  }
 }
 
-class _TabletsSettingsState extends State<TabletsSettings> {
+class SettingsScreen extends StatefulWidget {
+  final Store<ActivityState> store;
+
+  SettingsScreen({Key key, this.store}) : super(key: key);
+
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
   Store<ActivityState> get store => widget.store;
+
   final _formKey = GlobalKey<FormState>();
 
   /// Step of tablet settings, this variable helps to show specified info
@@ -83,7 +97,9 @@ class _TabletsSettingsState extends State<TabletsSettings> {
               child: Column(
                 children: <Widget>[
                   getNameEditor(),
-                  settingsStep == 2 ? getDosageAndCountInput() : Container(),
+                  settingsStep == 2
+                      ? getDosageAndCountInput(context)
+                      : Container(),
                 ],
               ),
             ),
@@ -135,7 +151,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
   }
 
   /// If user input name then show field to input dosage and count of intakes
-  Widget getDosageAndCountInput() {
+  Widget getDosageAndCountInput(BuildContext context) {
     var padding = const EdgeInsets.only(left: 16.0);
     return Material(
       color: Colors.grey[200],
@@ -163,7 +179,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
                 ),
               ),
             ),
-            onTap: showCountOfIntakesSelecter,
+            onTap: () => showCountOfIntakesSelecter(context),
           ),
           SizedBox(height: 20.0),
           Container(
@@ -184,7 +200,7 @@ class _TabletsSettingsState extends State<TabletsSettings> {
                 ),
               ),
             ),
-            onTap: showDosageSelecter,
+            onTap: () => showDosageSelecter(context),
           ),
         ],
       ),
@@ -238,8 +254,9 @@ class _TabletsSettingsState extends State<TabletsSettings> {
   }
 
   /// Show bottom sheet dialog to select [countOfIntakes] variable
-  void showCountOfIntakesSelecter() {
+  void showCountOfIntakesSelecter(BuildContext context) {
     Scaffold.of(context).showBottomSheet((context) => Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             ListTile(
@@ -252,10 +269,19 @@ class _TabletsSettingsState extends State<TabletsSettings> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: List.generate(3, (index) {
-                return ListTile(
-                  title: Text('${index + 1} раза в день',
-                      style: mainTextStyle, textAlign: TextAlign.center),
-                  onTap: () => setState(() => countOfIntakes = index + 1),
+                return InkWell(
+                  child: Container(
+                    height: 40.0,
+                    width: double.infinity,
+                    child: Center(
+                      child: Text('${index + 1} раза в день',
+                          style: mainTextStyle, textAlign: TextAlign.center),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    setState(() => countOfIntakes = index + 1);
+                  },
                 );
               }),
             ),
@@ -264,29 +290,42 @@ class _TabletsSettingsState extends State<TabletsSettings> {
   }
 
   /// Show bottom sheet dialog to select [dosage] variable
-  void showDosageSelecter() {
-    Scaffold.of(context).showBottomSheet((context) => Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            ListTile(
-              title: Text('Выберите количество',
-                  style: mainTextStyle, textAlign: TextAlign.center),
-              subtitle: Text('Сколько количетство таблеток за один приём',
-                  style: mainTextStyle.copyWith(fontSize: 15.0),
-                  textAlign: TextAlign.center),
-            ),
-            Column(
+  void showDosageSelecter(BuildContext context) {
+    showBottomSheet(
+        context: context,
+        builder: (context) => Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return ListTile(
-                  title: Text('${index + 1}',
+              children: <Widget>[
+                ListTile(
+                  title: Text('Выберите количество',
                       style: mainTextStyle, textAlign: TextAlign.center),
-                  onTap: () => setState(() => dosage = index + 1),
-                );
-              }),
-            ),
-          ],
-        ));
+                  subtitle: Text('Сколько количетство таблеток за один приём',
+                      style: mainTextStyle.copyWith(fontSize: 15.0),
+                      textAlign: TextAlign.center),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return InkWell(
+                      child: Container(
+                        height: 35.0,
+                        width: double.infinity,
+                        child: Center(
+                          child: Text('${index + 1}',
+                              style: mainTextStyle,
+                              textAlign: TextAlign.center),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        setState(() => dosage = index + 1);
+                      },
+                    );
+                  }),
+                ),
+              ],
+            ));
   }
 
   var coursesStyle = TextStyle(
