@@ -41,8 +41,9 @@ class TabletsReminder extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
+                    var store = StoreProvider.of<ActivityState>(context);
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => TabletsSettings(store: _store)));
+                        builder: (context) => TabletsSettings(store: store)));
                   },
                 ),
               ),
@@ -51,8 +52,6 @@ class TabletsReminder extends StatelessWidget {
           SizedBox(height: 20.0),
           StoreConnector<ActivityState, Function(TabletsIntake, String)>(
             converter: (store) {
-              _store = store;
-
               /// Method to push ned action to reducer to update data about [tablet]
               return (tablet, dayTime) =>
                   store.dispatch(ChangeCompletedTabletsAction(
@@ -61,6 +60,7 @@ class TabletsReminder extends StatelessWidget {
                   ));
             },
             builder: (context, callback) {
+              _store = StoreProvider.of<ActivityState>(context);
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(

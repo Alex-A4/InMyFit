@@ -4,10 +4,8 @@ import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/water_settings.dart';
-import 'package:redux/redux.dart';
 
 class WaterReminder extends StatelessWidget {
-  Store<ActivityState> _store;
   final _peopleHeight = 120.0;
   final _peopleWidth = 100.0;
 
@@ -21,24 +19,23 @@ class WaterReminder extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<ActivityState, ValueChanged<bool>>(
       converter: (store) {
-        _store = store;
-
-        int filledCount =
-            store.state.dayActivityController.waterIntake.completed;
-        int goal = store.state.dayActivityController.waterIntake.goalToIntake;
-
-        /// Generate list of fill/empty vessels.
-        /// Example: [filledCount] = 3 and [goal] = 5, then it generates
-        /// list [true, true, true, false, false]
-        filledVessels =
-            List.generate(goal, (index) => index < filledCount ? true : false);
-
         /// If [isFilled] true then increase count else decrease
         return (isFilled) =>
             store.dispatch(ChangeCompletedWaterAction(isFilled: isFilled));
       },
       builder: (context, changer) {
-        WaterIntake water = _store.state.dayActivityController.waterIntake;
+        var state = StoreProvider.of<ActivityState>(context).state;
+        WaterIntake water = state.dayActivityController.waterIntake;
+
+        int filledCount = state.dayActivityController.waterIntake.completed;
+        int fullGoal = state.dayActivityController.waterIntake.goalToIntake;
+
+        /// Generate list of fill/empty vessels.
+        /// Example: [filledCount] = 3 and [goal] = 5, then it generates
+        /// list [true, true, true, false, false]
+        filledVessels =
+            List.generate(fullGoal, (index) => index < filledCount ? true : false);
+
         WaterIntakeType type = water.type;
 
         //If it's glasses then 200ml else 500ml
@@ -76,7 +73,8 @@ class WaterReminder extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(WaterSettingsRoute(_store));
+                        var store = StoreProvider.of<ActivityState>(context);
+                        Navigator.of(context).push(WaterSettingsRoute(store));
                       },
                     ),
                   ),
