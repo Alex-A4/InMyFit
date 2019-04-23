@@ -7,6 +7,7 @@ import 'package:redux/redux.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/cupertino.dart';
 
+/// Empty widget with [Scaffold] that needs to show [BottomSheet]
 class TabletsSettings extends StatelessWidget {
   final Store<ActivityState> store;
 
@@ -20,6 +21,7 @@ class TabletsSettings extends StatelessWidget {
   }
 }
 
+/// Widget that needs to show info about tablets
 class SettingsScreen extends StatefulWidget {
   final Store<ActivityState> store;
 
@@ -233,7 +235,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ? Container()
               : RaisedButton(
                   onPressed: () {
-                    /// TODO: add deleting [selectedTablet]
+                    store.dispatch(DeleteTabletsAction(tablet: selectedTablet));
+                    setState(() => settingsStep = 1);
                   },
                   child: Text('Удалить препарат', style: appBarStyle),
                   color: Colors.red[300],
@@ -294,7 +297,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             foregroundColor: Colors.red[400],
             caption: 'Удалить',
             onTap: () {
-              ///TODO: add deleting [tablet]
+              store.dispatch(DeleteTabletsAction(tablet: tablet));
+              setState(() {});
             },
           ),
         ],
