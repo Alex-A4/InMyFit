@@ -43,7 +43,7 @@ class CalendarWidget extends StatelessWidget {
                 String dateStr = DateFormat.yMMMM(locale).format(date).trim();
                 dateStr = dateStr.replaceRange(dateStr.length-3, dateStr.length, '');
                 var first= dateStr.substring(0, 1);
-                dateStr = dateStr.replaceAll(first, first.toUpperCase());
+                dateStr = dateStr.replaceFirst(first, first.toUpperCase());
                 return dateStr;
               },
               leftChevronIcon: Icon(
