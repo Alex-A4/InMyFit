@@ -16,21 +16,24 @@ class DateInterval {
       DateTime(date.year, date.month, date.day);
 
   ///Convert [DateInterval] to JSON object
-  Map<String, String> toJSON() => {
-        'start': startDate.toUtc().toString(),
-        'end': endDate.toUtc().toString(),
-      };
+  String toJSON() =>
+      '${startDate.toUtc().toString()}|${endDate.toUtc().toString()}';
 
   /// Restore [DateInterval] from JSON object
-  factory DateInterval.fromJSON(Map<String, String> date) => DateInterval(
-        startDate: DateTime.parse(date['start']),
-        endDate: DateTime.parse(date['end']),
-      );
+  factory DateInterval.fromJSON(String datePair) {
+    List<String> dates = datePair.split('|');
+    return DateInterval(
+      startDate: DateTime.parse(dates[0]),
+      endDate: DateTime.parse(dates[1]),
+    );
+  }
 
   /// Check is 'this' [DateInterval] contains [other] date
   bool isContainsDate(DateTime other) {
-    if (startDate.isBefore(other) && endDate.isAfter(other))
+    if (startDate.isBefore(other) && endDate.isAfter(other) ||
+        startDate == other)
       return true;
-    else return false;
+    else
+      return false;
   }
 }

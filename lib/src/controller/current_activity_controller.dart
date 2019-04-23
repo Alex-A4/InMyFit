@@ -69,8 +69,8 @@ class CurrentActivityController {
 
   /// Convert tablets to map with pairs:
   /// '[DateInterval.toJSON()] : [TabletsIntake.toJSON()]'
-  Map<Map, Map> convertTabletsToJSON() {
-    Map<Map, Map> map = {};
+  Map<String, Map> convertTabletsToJSON() {
+    Map<String, Map> map = {};
     tablets.forEach((date, tablet) => map[date.toJSON()] = tablet.toJSON());
     return map;
   }
