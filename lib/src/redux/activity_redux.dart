@@ -477,11 +477,7 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
           newTablets.add(dayTablet);
         //Create new instance if tablets was not exist
         else
-          newTablets.add(TabletsIntake(
-            name: tablet.name,
-            countOfIntakes: tablet.countOfIntakes,
-            dosage: tablet.dosage,
-          ));
+          newTablets.add(TabletsIntake.initOnBasic(tablet));
       });
   });
 
