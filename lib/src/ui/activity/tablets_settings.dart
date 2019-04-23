@@ -53,6 +53,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// How many pills per one intake
   int dosage = 0;
 
+  /// Variable that indicate whether is editing mode or not
+  /// Editing mode can be activate by pressing on medicine in MyActiveCourses
+  /// section
+  bool isEditing = false;
+
+  /// Medicine that user selected for editing
+  TabletsIntake selectedTablet;
+
   /// How many times per day need to intake tablet
   int countOfIntakes = 0;
 
@@ -75,7 +83,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text('Настройки таблеток', style: appBarStyle),
                 InkWell(
                   onTap: () => setState(() {
-                        if (_formKey.currentState.validate()) ++settingsStep;
+                        if (settingsStep == 1 &&
+                            _formKey.currentState.validate())
+                          ++settingsStep;
+                        else if (settingsStep == 2 &&
+                            _formKey.currentState.validate())
+                          ++settingsStep;
+                        else if (settingsStep > 2) ++settingsStep;
                       }),
                   child: Text('Дальше', style: appBarStyle),
                 ),
@@ -96,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  getNameEditor(),
+                  settingsStep < 3 ? getNameEditor() : Container(),
                   settingsStep == 2
                       ? getDosageAndCountInput(context)
                       : Container(),
@@ -163,45 +177,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: padding,
               child:
                   Text('Как часто принимать таблетки', style: subtitleStyle)),
-          InkWell(
-            child: Container(
-              height: 50.0,
-              width: double.infinity,
-              padding: padding,
-              color: Colors.white,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  countOfIntakes == 0
-                      ? 'Количество приёмов'
-                      : '$countOfIntakes раз',
-                  style: countOfIntakes == 0 ? hintStyle : mainTextStyle,
+          FormField<int>(
+            initialValue: countOfIntakes,
+            validator: (val) =>
+                countOfIntakes != 0 ? null : 'Выберите количество приёмов',
+            builder: (state) => InkWell(
+                  child: Container(
+                    height: 50.0,
+                    width: double.infinity,
+                    padding: padding,
+                    color: Colors.white,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        state.hasError && countOfIntakes == 0
+                            ? state.errorText
+                            : countOfIntakes == 0
+                                ? 'Количество приёмов'
+                                : '$countOfIntakes раза',
+                        style: countOfIntakes == 0 ? hintStyle : mainTextStyle,
+                      ),
+                    ),
+                  ),
+                  onTap: () => showCountOfIntakesSelecter(context),
                 ),
-              ),
-            ),
-            onTap: () => showCountOfIntakesSelecter(context),
           ),
           SizedBox(height: 20.0),
           Container(
               padding: padding,
               child:
                   Text('Сколько таблеток за один приём', style: subtitleStyle)),
-          InkWell(
-            child: Container(
-              height: 50.0,
-              width: double.infinity,
-              color: Colors.white,
-              padding: padding,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  dosage == 0 ? 'Дозировка' : '$dosage штук',
-                  style: dosage == 0 ? hintStyle : mainTextStyle,
+          FormField<int>(
+            validator: (val) => dosage != 0 ? null : 'Выберите дозировку',
+            builder: (state) => InkWell(
+                  child: Container(
+                    height: 50.0,
+                    width: double.infinity,
+                    color: Colors.white,
+                    padding: padding,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        state.hasError && dosage == 0
+                            ? state.errorText
+                            : dosage == 0 ? 'Дозировка' : '$dosage штук',
+                        style: dosage == 0 ? hintStyle : mainTextStyle,
+                      ),
+                    ),
+                  ),
+                  onTap: () => showDosageSelecter(context),
                 ),
-              ),
-            ),
-            onTap: () => showDosageSelecter(context),
           ),
+          SizedBox(height: 25.0),
+          !isEditing
+              ? Container()
+              : RaisedButton(
+                  onPressed: () {
+                    /// TODO: add deleting [selectedTablet]
+                  },
+                  child: Text('Удалить препарат', style: appBarStyle),
+                  color: Colors.red[300],
+                ),
         ],
       ),
     );
@@ -231,25 +267,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Get dismissed widget with one tablet representation
   Widget getActiveTablet(TabletsIntake tablet) {
-    return Slidable(
-      delegate: SlidableScrollDelegate(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(tablet.name, style: coursesStyle),
-          Icon(Icons.chevron_right, color: coursesStyle.color),
+    return GestureDetector(
+      /// Open page for editing [tablet]
+      onTap: () => setState(() {
+            selectedTablet = tablet;
+            nameController.text = tablet.name;
+            dosage = tablet.dosage;
+            countOfIntakes = tablet.countOfIntakes;
+            settingsStep = 2;
+            isEditing = true;
+          }),
+      child: Slidable(
+        delegate: SlidableScrollDelegate(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(tablet.name, style: coursesStyle),
+            Icon(Icons.chevron_right, color: coursesStyle.color),
+          ],
+        ),
+        direction: Axis.horizontal,
+        secondaryActions: <Widget>[
+          IconSlideAction(
+            icon: null,
+            color: Colors.white,
+            foregroundColor: Colors.red[400],
+            caption: 'Удалить',
+            onTap: () {
+              ///TODO: add deleting [tablet]
+            },
+          ),
         ],
       ),
-      direction: Axis.horizontal,
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          icon: null,
-          color: Colors.white,
-          foregroundColor: Colors.red[400],
-          caption: 'Удалить',
-          onTap: () {},
-        ),
-      ],
     );
   }
 
