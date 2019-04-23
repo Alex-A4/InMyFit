@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:inmyfit/main.dart';
+import 'package:inmyfit/src/models/date_interval.dart';
 import 'package:inmyfit/src/models/tablet_intake.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
+import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,6 +68,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// How many times per day need to intake tablet
   int countOfIntakes = 0;
 
+  /// Dates that need to set up interval of new tablet
+  DateTime startDate;
+  DateTime endDate;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,9 +97,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         else if (settingsStep == 2 &&
                             _formKey.currentState.validate())
                           ++settingsStep;
-                        else if (settingsStep > 2) ++settingsStep;
+                        else if (settingsStep == 3 &&
+                            _formKey.currentState.validate()) {
+                          /// Add new tablet to list
+                          store.dispatch(AddOrUpdateTabletsDataAction(
+                            interval: DateInterval(
+                                startDate: startDate, endDate: endDate),
+                            tablet: TabletsIntake(
+                                name: nameController.text,
+                                countOfIntakes: countOfIntakes,
+                                dosage: dosage),
+                          ));
+
+                          Navigator.of(context).pop();
+                        }
                       }),
-                  child: Text('Дальше', style: appBarStyle),
+                  child: Text(settingsStep == 3 ? 'Добавить' : 'Дальше',
+                      style: appBarStyle),
                 ),
               ],
             ),
@@ -116,6 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   settingsStep == 2
                       ? getDosageAndCountInput(context)
                       : Container(),
+                  settingsStep == 3 ? getIntervalPicker() : Container(),
                 ],
               ),
             ),
@@ -180,7 +201,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child:
                   Text('Как часто принимать таблетки', style: subtitleStyle)),
           FormField<int>(
-            initialValue: countOfIntakes,
             validator: (val) =>
                 countOfIntakes != 0 ? null : 'Выберите количество приёмов',
             builder: (state) => InkWell(
@@ -231,16 +251,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
           ),
           SizedBox(height: 25.0),
-          !isEditing
-              ? Container()
-              : RaisedButton(
-                  onPressed: () {
-                    store.dispatch(DeleteTabletsAction(tablet: selectedTablet));
-                    setState(() => settingsStep = 1);
-                  },
-                  child: Text('Удалить препарат', style: appBarStyle),
-                  color: Colors.red[300],
-                ),
+          Container(
+            alignment: Alignment.center,
+            child: !isEditing
+                ? Container()
+                : RaisedButton(
+                    onPressed: () {
+                      store.dispatch(
+                          DeleteTabletsAction(tablet: selectedTablet));
+                      setState(() => settingsStep = 1);
+                    },
+                    child: Text('Удалить препарат', style: appBarStyle),
+                    color: Colors.red[300],
+                  ),
+          ),
         ],
       ),
     );
@@ -250,15 +274,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget getActiveCourses() {
     List<TabletsIntake> tablets = [];
     if (store.state.currentActivityController.tablets.isNotEmpty)
-      tablets = store.state.currentActivityController.tablets.values;
+      store.state.currentActivityController.tablets.values
+          .forEach((tablet) => tablets.add(tablet));
 
     // If there is no courses then return empty container
     return tablets.isEmpty
         ? Container()
         : Container(
+            margin: const EdgeInsets.only(top: 20.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Активные курсы', style: subtitleStyle),
+                Container(
+                    margin: const EdgeInsets.only(left: 16.0),
+                    child: Text('Активные курсы', style: subtitleStyle)),
                 Column(
                   children:
                       tablets.map((tablet) => getActiveTablet(tablet)).toList(),
@@ -282,19 +311,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }),
       child: Slidable(
         delegate: SlidableScrollDelegate(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(tablet.name, style: coursesStyle),
-            Icon(Icons.chevron_right, color: coursesStyle.color),
-          ],
+        child: Container(
+          padding: const EdgeInsets.only(left: 16.0),
+          color: Colors.white,
+          height: 50.0,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(tablet.name, style: coursesStyle),
+                Icon(Icons.chevron_right,
+                    color: coursesStyle.color, size: 35.0),
+              ],
+            ),
+          ),
         ),
         direction: Axis.horizontal,
         secondaryActions: <Widget>[
           IconSlideAction(
-            icon: null,
-            color: Colors.white,
-            foregroundColor: Colors.red[400],
+            icon: Icons.delete,
+            color: Colors.red[400],
+            foregroundColor: Colors.white,
             caption: 'Удалить',
             onTap: () {
               store.dispatch(DeleteTabletsAction(tablet: tablet));
@@ -304,6 +341,109 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  /// Widget for 3-rd step of [settingsStep] that needs to pick start and end
+  /// date of course
+  Widget getIntervalPicker() {
+    var padding = const EdgeInsets.only(left: 16.0);
+    return Material(
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 10.0),
+          Container(
+              padding: padding,
+              child: Text('Дата начала', style: subtitleStyle)),
+          FormField(
+            validator: (val) =>
+                startDate != null ? null : 'Выберите начальную дату',
+            builder: (state) => InkWell(
+                  child: Container(
+                    height: 50.0,
+                    width: double.infinity,
+                    padding: padding,
+                    color: Colors.white,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        state.hasError && startDate == null
+                            ? state.errorText
+                            : startDate == null
+                                ? 'Начало приёма'
+                                : getFormattedDate(startDate),
+                        style: startDate == null ? hintStyle : mainTextStyle,
+                      ),
+                    ),
+                  ),
+                  onTap: () async {
+                    var date = DateTime.now();
+                    startDate = await showDatePicker(
+                        context: context,
+                        initialDate: date,
+                        firstDate: DateTime(date.year, date.month - 5),
+                        lastDate: DateTime(date.year, date.month + 5));
+                    setState(() {});
+                  },
+                ),
+          ),
+          SizedBox(height: 20.0),
+          Container(
+              padding: padding,
+              child: Text('Дата окончания', style: subtitleStyle)),
+          FormField(
+            validator: (val) =>
+                endDate != null ? null : 'Выберите конечную дату',
+            builder: (state) => InkWell(
+                child: Container(
+                  height: 50.0,
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: padding,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      state.hasError && endDate == null
+                          ? state.errorText
+                          : endDate == null
+                              ? 'Конец приёма'
+                              : getFormattedDate(endDate),
+                      style: endDate == null ? hintStyle : mainTextStyle,
+                    ),
+                  ),
+                ),
+                onTap: () async {
+                  var date = DateTime.now();
+                  endDate = await showDatePicker(
+                      context: context,
+                      initialDate: date,
+                      firstDate: DateTime(date.year, date.month - 5),
+                      lastDate: DateTime(date.year, date.month + 5));
+                  setState(() {});
+                }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Get formatted date that contains only month and day and looks like:
+  /// January, 28  or April, 13
+  String getFormattedDate(DateTime date) {
+    /// Split date by space.
+    /// At 0 place - day
+    /// At 1 place - month
+    /// At 2 place - year
+    List<String> parts = DateFormat.yMMMMd("ru_RU").format(date).split(' ');
+    var day = parts[0];
+    var month = parts[1];
+
+    /// First symbol in month
+    var firstSymbol = month.substring(0, 1);
+    month = month.replaceFirst(firstSymbol, firstSymbol.toUpperCase());
+
+    return '$month, $day';
   }
 
   /// Show bottom sheet dialog to select [countOfIntakes] variable
@@ -382,7 +522,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   var coursesStyle = TextStyle(
-      fontSize: 17.0, color: Colors.grey[350], fontFamily: 'ProstoSans');
+      fontSize: 20.0, color: Colors.grey[600], fontFamily: 'ProstoSans');
   var appBarStyle = TextStyle(
       color: Colors.white,
       fontSize: 16.0,
