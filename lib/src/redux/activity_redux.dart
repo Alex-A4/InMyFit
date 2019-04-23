@@ -228,13 +228,14 @@ void waterActionMiddleware(
           fixWaterByDate(date, water, store.state.currentActivityController);
 
       // If list of tablets from DB is empty then try to create new based on basic
-      var tablets = list[0].isNotEmpty
-          ? list[0]
-          : List.generate(
-              store.state.currentActivityController.tablets.length,
-              (index) => TabletsIntake.initOnBasic(
-                  store.state.currentActivityController.tablets[index]),
-            );
+      var tablets = list[0];
+      if (tablets.isEmpty) {
+        store.state.currentActivityController.tablets
+            .forEach((interval, tablet) {
+          if (interval.isContainsDate(DateTime.now()))
+            tablets.add(TabletsIntake.initOnBasic(tablet));
+        });
+      }
       var controller = DayActivityController(
         date,
         tablets: tablets,
