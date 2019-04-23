@@ -69,7 +69,7 @@ class TabletsIntake {
       Map<String, bool> prevCompleted, int countOfIntakes) {
     if (prevCompleted == null) return null;
 
-    Map newCompleted = {};
+    Map<String, bool> newCompleted = {};
     if (countOfIntakes >= 1)
       newCompleted['morning'] = prevCompleted['morning'] ?? false;
     if (countOfIntakes >= 2)
