@@ -94,6 +94,17 @@ class AddOrUpdateTabletsDataAction {
       {this.tablet, this.interval, this.dayController});
 }
 
+/// Action to delete [TabletsIntake] from [CurrentActivityController]
+class DeleteTabletsAction {
+  /// Tablet that need to delete
+  final TabletsIntake tablet;
+
+  /// Controller that will be send from middleware to reducer after converting
+  final CurrentActivityController controller;
+
+  DeleteTabletsAction({this.tablet, this.controller});
+}
+
 ///
 ///
 ///
@@ -171,6 +182,19 @@ ActivityState activityReducer(ActivityState state, action) {
         currentActivityController: state.currentActivityController,
         dayActivityController: action.dayController,
       );
+  }
+
+  /// This action must provide [CurrentActivityController] to update state with
+  /// deleted tablets
+  if (action is DeleteTabletsAction) {
+    if (action.controller != null) {
+      var dayController = checkAndMergeDayAndCurrentActivities(
+          state.dayActivityController, action.controller);
+      return ActivityState(
+        currentActivityController: action.controller,
+        dayActivityController: dayController,
+      );
+    }
   }
 
   //Return previous state if unknown action
@@ -367,6 +391,20 @@ void tabletsActionMiddleware(
     // Update tablet in action to change UI
     action = ChangeCompletedTabletsAction(
         dayTime: null, tablet: tablet, index: index);
+  }
+
+  if (action is DeleteTabletsAction) {
+    /// Delete specified tablets
+    var tablets = store.state.currentActivityController.tablets;
+    tablets.removeWhere((interval, tablet) => tablet == action.tablet);
+
+    /// Update controller and send it to reducer
+    var controller = CurrentActivityController(
+        store.state.currentActivityController.water, tablets);
+    action = DeleteTabletsAction(controller: controller);
+
+    /// Save updated data
+    controller.saveToLocal();
   }
 
   /// Required call of next middleware or reducer
