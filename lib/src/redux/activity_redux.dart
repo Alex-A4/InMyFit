@@ -461,11 +461,13 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
   List<TabletsIntake> newTablets = [];
 
   currentController.tablets.forEach((date, tablet) {
+    /// Variable to check is tablet exist in dayController
+    bool isExist = false;
     if (date.isContainsDate(dayController.todaysDate))
       dayController.tabletsIntake.forEach((dayTablet) {
         // If names of tablets is equals and data not equals then update data
         // else if names equals then copy old data else create new instance
-        if (tablet == dayTablet && !isTabletsEquals(tablet, dayTablet))
+        if (tablet == dayTablet && !isTabletsEquals(tablet, dayTablet)) {
           newTablets.add(TabletsIntake(
             dosage: tablet.dosage,
             countOfIntakes: tablet.countOfIntakes,
@@ -473,13 +475,19 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
             //Completed will be fixed in constructor
             completed: dayTablet.completed,
           ));
+          isExist = true;
+        }
         //Copy data
-        else if (tablet == dayTablet)
+        else if (tablet == dayTablet) {
           newTablets.add(dayTablet);
-        //Create new instance if tablets was not exist
-        else
-          newTablets.add(TabletsIntake.initOnBasic(tablet));
+          isExist = true;
+        }
       });
+    //Create new instance if tablets was not exist
+    if (!isExist) {
+      newTablets.add(TabletsIntake.initOnBasic(tablet));
+      isExist = true;
+    }
   });
 
   return DayActivityController(
