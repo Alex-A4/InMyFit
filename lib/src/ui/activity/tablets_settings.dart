@@ -1,3 +1,4 @@
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:inmyfit/main.dart';
@@ -377,15 +378,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  onTap: () async {
-                    var date = DateTime.now();
-                    startDate = await showDatePicker(
-                        context: context,
-                        initialDate: date,
-                        firstDate: DateTime(date.year, date.month - 5),
-                        lastDate: DateTime(date.year, date.month + 5));
-                    setState(() {});
-                  },
+                  onTap: () => DatePicker.showDatePicker(
+                        context,
+                        onConfirm: (date) => setState(() => startDate = date),
+                        locale: LocaleType.ru,
+                        currentTime: startDate ?? DateTime.now(),
+                      ),
                 ),
           ),
           SizedBox(height: 20.0),
@@ -396,32 +394,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
             validator: (val) =>
                 endDate != null ? null : 'Выберите конечную дату',
             builder: (state) => InkWell(
-                child: Container(
-                  height: 50.0,
-                  width: double.infinity,
-                  color: Colors.white,
-                  padding: padding,
                   child: Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      state.hasError && endDate == null
-                          ? state.errorText
-                          : endDate == null
-                              ? 'Конец приёма'
-                              : getFormattedDate(endDate),
-                      style: endDate == null ? hintStyle : mainTextStyle,
+                    height: 50.0,
+                    width: double.infinity,
+                    color: Colors.white,
+                    padding: padding,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        state.hasError && endDate == null
+                            ? state.errorText
+                            : endDate == null
+                                ? 'Конец приёма'
+                                : getFormattedDate(endDate),
+                        style: endDate == null ? hintStyle : mainTextStyle,
+                      ),
                     ),
                   ),
+                  onTap: () => DatePicker.showDatePicker(
+                        context,
+                        onConfirm: (date) => setState(() => endDate = date),
+                        locale: LocaleType.ru,
+                        currentTime: endDate ?? DateTime.now(),
+                      ),
                 ),
-                onTap: () async {
-                  var date = DateTime.now();
-                  endDate = await showDatePicker(
-                      context: context,
-                      initialDate: date,
-                      firstDate: DateTime(date.year, date.month - 5),
-                      lastDate: DateTime(date.year, date.month + 5));
-                  setState(() {});
-                }),
           ),
         ],
       ),
