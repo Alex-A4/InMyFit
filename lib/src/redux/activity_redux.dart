@@ -483,8 +483,8 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
           isExist = true;
         }
       });
-    //Create new instance if tablets was not exist
-    if (!isExist) {
+    //Create new instance if tablets was not exist and it is inside interval
+    if (!isExist && date.isContainsDate(dayController.todaysDate)) {
       newTablets.add(TabletsIntake.initOnBasic(tablet));
       isExist = true;
     }
