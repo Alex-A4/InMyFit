@@ -167,12 +167,29 @@ class TabletsReminder extends StatelessWidget {
   /// Get the collapsed widget that contains short info about tablets
   /// For info about [datTime], see [getExpandableItem]
   Widget getCollapsedTabletsWidget(String dayTime) {
+    var tablets = _store.state.dayActivityController.tabletsIntake;
+
     return Container(
-        // child: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: <Widget>[],
-        // ),
-        );
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: tablets
+            // Build column of tablets that contains [dayTime]
+            .where((tablet) => tablet.completed.containsKey(dayTime))
+            .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget getCollapsedTabletInfo(TabletsIntake tablet, String dayTime) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Image.asset(
+        'assets/tabletsReminder/${tablet.completed[dayTime] ? 'completed' : 'notCompleted'}.png',
+        width: 45.0,
+        fit: BoxFit.fitWidth,
+      ),
+    );
   }
 
   var textStyleRed = TextStyle(color: Colors.red[300], fontSize: 25.0);
