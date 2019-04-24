@@ -147,7 +147,7 @@ class IntakeDBProvider {
     var response = await db.update(
       'Tablets',
       data,
-      where: 'date = ?, name = ?',
+      where: 'date = ? AND name = ?',
       whereArgs: [data['date'], data['name']],
     );
 
