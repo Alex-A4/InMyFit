@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
+import 'package:inmyfit/src/ui/activity/spacer.dart';
 import 'package:inmyfit/src/ui/activity/tablets_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_tip.dart';
@@ -38,31 +39,40 @@ class ActivityLog extends StatelessWidget {
   }
 
   Widget getSpacer() {
-    return Container(
-      padding: const EdgeInsets.only(top: 32.0),
-      height: 75.0,
-      child: Image.asset(
-        'assets/activity_water/spacer.png',
-        height: 65.0,
+    return CustomPaint(
+      foregroundPainter : ActivitySpacer(isTopEdge: false),
+      isComplex: true,
+      child: Container(
+        padding: const EdgeInsets.only(top: 32.0),
+        height: 75.0,
         width: double.infinity,
-        fit: BoxFit.fill,
+        child: Image.asset(
+          'assets/activity_water/spacer.png',
+          height: 65.0,
+          width: double.infinity,
+          fit: BoxFit.fill,
+        ),
       ),
     );
   }
 
   //Return the widget with motivator and button to buy course
   Widget getMotivatorAndCourse() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          getMotivatorTip(),
-          SizedBox(
-            height: 10.0,
-          ),
-          getBuyCourseButton(),
-        ],
+    return CustomPaint(
+      isComplex: true,
+      foregroundPainter: ActivitySpacer(isTopEdge: true),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            getMotivatorTip(),
+            SizedBox(
+              height: 10.0,
+            ),
+            getBuyCourseButton(),
+          ],
+        ),
       ),
     );
   }
