@@ -24,7 +24,7 @@ class EdgeClipper extends CustomClipper<Path> {
     }
 
     /// To clip top, the bypass will be performed counterclockwise
-    /// To clip bottom. the pypass will be performed clockwise
+    /// To clip bottom. the bypass will be performed clockwise
     path.moveTo(positionX, positionX);
 
     //Go to left: bottom for top clipping and top for bottom clipping corner
@@ -52,39 +52,4 @@ class EdgeClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-//
-//  @override
-//  void paint(Canvas canvas, Size size) {
-//    Paint line = Paint();
-//
-//    double positionX = 0.0;
-//    double positionY;
-//    if (isTopEdge)
-//      positionY = 0.0;
-//    else
-//      positionY = size.height - edgeHeight;
-//
-////    Offset begin = Offset(0.0, positionY);
-////    Offset end;
-//    Path path = Path();
-//    path.moveTo(positionX, positionY);
-//
-//    while (positionX < size.width) {
-//      path.lineTo(positionX + edgeWidthHalf, positionY + edgeHeight);
-//      positionX += edgeWidthHalf * 2;
-//      path.lineTo(positionX, positionY);
-//    }
-//    path.close();
-//
-//    canvas.clipPath(path);
-////    while (begin.dx <= size.width) {
-////      end = Offset(begin.dx + edgeWidthHalf, begin.dy + edgeHeight);
-////      canvas.drawLine(begin, end, line);
-////      begin = Offset(begin.dx + edgeWidthHalf * 2, begin.dy);
-////      canvas.drawLine(end, begin, line);
-////    }
-//  }
-//
-//  @override
-//  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
