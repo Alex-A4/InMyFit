@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
-import 'package:inmyfit/src/ui/activity/spacer.dart';
+import 'package:inmyfit/src/ui/activity/edge_clipper.dart';
 import 'package:inmyfit/src/ui/activity/tablets_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_tip.dart';
@@ -18,60 +18,68 @@ class ActivityLog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: StoreProvider<ActivityState>(
-        store: store,
-        child: SingleChildScrollView(
-          key: Key('ActivityLogListView'),
-          padding: EdgeInsets.only(top: 28.0),
-          child: Column(
-            children: <Widget>[
-              CalendarWidget(key: Key('Calendar')),
-              WaterTipWidget(key: Key('WaterTip')),
-              WaterReminder(key: Key('WaterReminder')),
-              getSpacer(),
-              TabletsReminder(key: Key('TabletsReminder')),
-              getMotivatorAndCourse(),
-            ],
+      body: Builder(
+        builder: (context) => StoreProvider<ActivityState>(
+              store: store,
+              child: SingleChildScrollView(
+                key: Key('ActivityLogListView'),
+                padding: EdgeInsets.only(top: 28.0),
+                child: Column(
+                  children: <Widget>[
+                    CalendarWidget(key: Key('Calendar')),
+                    WaterTipWidget(key: Key('WaterTip')),
+                    WaterReminder(key: Key('WaterReminder')),
+                    getSpacer(context),
+                    TabletsReminder(key: Key('TabletsReminder')),
+                    getMotivatorAndCourse(context),
+                  ],
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
+  Widget getSpacer(BuildContext context) {
+    return Container(
+      color: Colors.grey[200],
+      child: ClipPath(
+        clipper: EdgeClipper(isTopEdge: false),
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          padding: const EdgeInsets.only(top: 32.0),
+          height: 75.0,
+          width: double.infinity,
+          child: Image.asset(
+            'assets/activity_water/spacer.png',
+            height: 65.0,
+            width: double.infinity,
+            fit: BoxFit.fill,
           ),
         ),
       ),
     );
   }
 
-  Widget getSpacer() {
-    return CustomPaint(
-      foregroundPainter: EdgeSpacer(isTopEdge: false),
-      isComplex: true,
-      child: Container(
-        padding: const EdgeInsets.only(top: 32.0),
-        height: 75.0,
-        width: double.infinity,
-        child: Image.asset(
-          'assets/activity_water/spacer.png',
-          height: 65.0,
-          width: double.infinity,
-          fit: BoxFit.fill,
-        ),
-      ),
-    );
-  }
-
   //Return the widget with motivator and button to buy course
-  Widget getMotivatorAndCourse() {
-    return CustomPaint(
-      isComplex: true,
-      foregroundPainter: EdgeSpacer(isTopEdge: true),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            getMotivatorTip(),
-            SizedBox(
-              height: 10.0,
-            ),
-            getBuyCourseButton(),
-          ],
+  Widget getMotivatorAndCourse(BuildContext context) {
+    return Container(
+      color: Colors.grey[200],
+      child: ClipPath(
+        clipper: EdgeClipper(isTopEdge: true),
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              getMotivatorTip(),
+              SizedBox(
+                height: 10.0,
+              ),
+              getBuyCourseButton(),
+            ],
+          ),
         ),
       ),
     );
