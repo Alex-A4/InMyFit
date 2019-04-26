@@ -40,7 +40,7 @@ class ActivityLog extends StatelessWidget {
 
   Widget getSpacer() {
     return CustomPaint(
-      foregroundPainter : ActivitySpacer(isTopEdge: false),
+      foregroundPainter: EdgeSpacer(isTopEdge: false),
       isComplex: true,
       child: Container(
         padding: const EdgeInsets.only(top: 32.0),
@@ -60,7 +60,7 @@ class ActivityLog extends StatelessWidget {
   Widget getMotivatorAndCourse() {
     return CustomPaint(
       isComplex: true,
-      foregroundPainter: ActivitySpacer(isTopEdge: true),
+      foregroundPainter: EdgeSpacer(isTopEdge: true),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         child: Column(
