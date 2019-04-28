@@ -380,6 +380,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   onTap: () => DatePicker.showDatePicker(
                         context,
+                        theme: dateStyle,
                         onConfirm: (date) => setState(() => startDate = date),
                         locale: LocaleType.ru,
                         currentTime: startDate ?? DateTime.now(),
@@ -413,6 +414,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   onTap: () => DatePicker.showDatePicker(
                         context,
+                        theme: dateStyle,
                         onConfirm: (date) => setState(() => endDate = date),
                         locale: LocaleType.ru,
                         currentTime: endDate ?? DateTime.now(),
@@ -516,6 +518,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ));
   }
+
+  var dateStyle = DatePickerTheme(
+    doneStyle: TextStyle(
+      fontSize: 16.0,
+      fontFamily: 'ProstoSans',
+      fontWeight: FontWeight.w600,
+      color: theme.primaryColor,
+    ),
+    cancelStyle: TextStyle(
+      fontSize: 16.0,
+      fontFamily: 'ProstoSans',
+      fontWeight: FontWeight.w600,
+      color: Colors.grey[600],
+    ),
+  );
 
   var coursesStyle = TextStyle(
       fontSize: 20.0, color: Colors.grey[600], fontFamily: 'ProstoSans');
