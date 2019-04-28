@@ -79,7 +79,7 @@ class _WaterSettingsState extends State<WaterSettings> {
   Widget getSettingsItem(Function onTap, String text) {
     return InkWell(
       child: Container(
-        height: 35.0,
+        height: 40.0,
         width: double.infinity,
         child: Center(
           child: Text(
