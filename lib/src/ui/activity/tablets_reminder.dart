@@ -137,9 +137,11 @@ class TabletsReminder extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(
-            tablet.name,
-            style: TextStyle(fontSize: 21.0, color: Colors.grey[400]),
+          Flexible(
+            child: Text(
+              tablet.name,
+              style: TextStyle(fontSize: 21.0, color: Colors.grey[400]),
+            ),
           ),
           Text('x ${tablet.dosage}', style: TextStyle(color: Colors.grey[300])),
           SizedBox(width: 20.0),

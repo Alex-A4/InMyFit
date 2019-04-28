@@ -320,7 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(tablet.name, style: coursesStyle),
+                Flexible(child: Text(tablet.name, style: coursesStyle)),
                 Icon(Icons.chevron_right,
                     color: coursesStyle.color, size: 35.0),
               ],
@@ -543,7 +543,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       fontWeight: FontWeight.w500);
   var mainTextStyle = TextStyle(
       fontSize: 18.0,
-      color: Colors.black87,
+      color: Colors.grey[600],
       fontFamily: 'Neue',
       fontWeight: FontWeight.w700);
   var hintStyle = TextStyle(fontSize: 18.0, color: Colors.red[400]);
