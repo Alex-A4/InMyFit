@@ -176,18 +176,18 @@ class TabletsReminder extends StatelessWidget {
   /// Get the collapsed widget that contains short info about tablets
   /// For info about [datTime], see [getExpandableItem]
   Widget getCollapsedTabletsWidget(String dayTime) {
-    var tablets = _store.state.dayActivityController.tabletsIntake;
+    // Find tablets that contains [dayTime]
+    var tablets = _store.state.dayActivityController.tabletsIntake
+        .where((tablet) => tablet.completed.containsKey(dayTime));
 
     return Container(
       child: Column(
         children: <Widget>[
           Divider(height: 1.0),
-          SizedBox(height: 8.0),
+          tablets.length > 0 ? SizedBox(height: 8.0) : Container(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: tablets
-                // Build column of tablets that contains [dayTime]
-                .where((tablet) => tablet.completed.containsKey(dayTime))
                 .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
                 .toList(),
           ),
