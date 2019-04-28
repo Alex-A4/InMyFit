@@ -111,6 +111,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ));
 
                           Navigator.of(context).pop();
+                          showDialog(
+                              context: context,
+                              builder: (context) => getSuccessDialog());
                         }
                       }),
                   child: Text(settingsStep == 3 ? 'Добавить' : 'Дальше',
@@ -523,6 +526,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ));
+  }
+
+  /// Return dialog where displays success result picture
+  Widget getSuccessDialog() {
+    return SimpleDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      elevation: 5.0,
+      contentPadding: EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 48.0),
+      titlePadding: EdgeInsets.fromLTRB(24.0, 48.0, 24.0, 0.0),
+      title: Text(
+        'Успешно\nдобавлено!',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 25.0,
+          fontFamily: 'ProstoSans',
+          fontWeight: FontWeight.bold,
+          color: theme.primaryColor,
+        ),
+      ),
+      children: <Widget>[
+        Icon(
+          CupertinoIcons.check_mark_circled,
+          color: theme.primaryColor,
+          size: 70.0,
+        ),
+      ],
+    );
+//    return Dialog(
+//      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+//      elevation: 5.0,
+//      child: ,
+//    );
   }
 
   var dateStyle = DatePickerTheme(
