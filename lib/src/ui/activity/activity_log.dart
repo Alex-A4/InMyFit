@@ -74,9 +74,7 @@ class ActivityLog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               getMotivatorTip(),
-              SizedBox(
-                height: 10.0,
-              ),
+              SizedBox(height: 10.0),
               getBuyCourseButton(),
             ],
           ),
