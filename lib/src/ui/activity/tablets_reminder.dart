@@ -98,7 +98,8 @@ class TabletsReminder extends StatelessWidget {
             style: TextStyle(
               color: theme.primaryColor,
               fontSize: 17.0,
-              fontWeight: FontWeight.w500,
+              fontFamily: 'ProstoSans',
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -116,12 +117,18 @@ class TabletsReminder extends StatelessWidget {
 
     return Container(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: tablets
-            // Build column of tablets that contains [dayTime]
-            .where((tablet) => tablet.completed.containsKey(dayTime))
-            .map((tablet) => getExtendedTabletInfo(tablet, dayTime, callback))
-            .toList(),
+        children: <Widget>[
+          Divider(height: 1.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: tablets
+                // Build column of tablets that contains [dayTime]
+                .where((tablet) => tablet.completed.containsKey(dayTime))
+                .map((tablet) =>
+                    getExtendedTabletInfo(tablet, dayTime, callback))
+                .toList(),
+          ),
+        ],
       ),
     );
   }
@@ -172,13 +179,19 @@ class TabletsReminder extends StatelessWidget {
     var tablets = _store.state.dayActivityController.tabletsIntake;
 
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: tablets
-            // Build column of tablets that contains [dayTime]
-            .where((tablet) => tablet.completed.containsKey(dayTime))
-            .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
-            .toList(),
+      child: Column(
+        children: <Widget>[
+          Divider(height: 1.0),
+          SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: tablets
+                // Build column of tablets that contains [dayTime]
+                .where((tablet) => tablet.completed.containsKey(dayTime))
+                .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
+                .toList(),
+          ),
+        ],
       ),
     );
   }
