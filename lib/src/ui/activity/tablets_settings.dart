@@ -312,20 +312,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }),
       child: Slidable(
         delegate: SlidableScrollDelegate(),
-        child: Container(
-          padding: const EdgeInsets.only(left: 16.0),
-          color: Colors.white,
-          height: 50.0,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(child: Text(tablet.name, style: coursesStyle)),
-                Icon(Icons.chevron_right,
-                    color: coursesStyle.color, size: 35.0),
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(left: 16.0),
+              color: Colors.white,
+              height: 50.0,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Flexible(child: Text(tablet.name, style: coursesStyle)),
+                    Icon(Icons.chevron_right,
+                        color: coursesStyle.color, size: 35.0),
+                  ],
+                ),
+              ),
             ),
-          ),
+            Divider(height: 1.0),
+          ],
         ),
         direction: Axis.horizontal,
         secondaryActions: <Widget>[
