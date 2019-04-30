@@ -165,6 +165,9 @@ class TabletsIntake {
   }
 
   @override
+  int get hashCode => name.hashCode * dosage;
+
+  @override
   String toString() =>
       'dosage : $dosage, name: $name, countOfIntakes: $countOfIntakes'
       '\ncompleted: ${completed.toString()}';
