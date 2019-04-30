@@ -1,3 +1,4 @@
+import 'package:inmyfit/src/controller/notification_controller.dart';
 import 'package:inmyfit/src/database/intake_db_provider.dart';
 import 'package:inmyfit/src/models/date_interval.dart';
 import 'package:inmyfit/src/models/water_intake.dart';
@@ -286,6 +287,10 @@ void waterActionMiddleware(
       goalToIntake: action.goalToIntake,
       type: action.type,
     );
+
+    /// Update notifications with new and old water instance
+    NotificationController.getInstance().scheduleWaterNotification(water);
+
     controller = CurrentActivityController(water, controller.tablets);
 
     //Update water of DayActivityController if there is today's date
@@ -342,10 +347,13 @@ void tabletsActionMiddleware(
       interval = action.interval;
     }
 
+    /// Set up notification for that tablet
+    NotificationController.getInstance()
+        .scheduleTabletsNotification(interval, newTablet);
+
     /// If date of [DayActivityController] inside of interval then
     /// update it's tablets data and action
-    if (interval != null &&
-        interval.isContainsDate(store.state.dayActivityController.todaysDate)) {
+    if (interval.isContainsDate(store.state.dayActivityController.todaysDate)) {
       var dayController = checkAndMergeDayAndCurrentActivities(
         store.state.dayActivityController,
         store.state.currentActivityController,
@@ -397,7 +405,15 @@ void tabletsActionMiddleware(
   if (action is DeleteTabletsAction) {
     /// Delete specified tablets
     var tablets = store.state.currentActivityController.tablets;
-    tablets.removeWhere((interval, tablet) => tablet == action.tablet);
+    tablets.removeWhere((interval, tablet) {
+      if (tablet == action.tablet) {
+        /// Cancel notification of that tablet
+        NotificationController.getInstance()
+            .cancelTabletNotification(interval, tablet);
+        return true;
+      }
+      return false;
+    });
 
     /// Update controller and send it to reducer
     var controller = CurrentActivityController(
