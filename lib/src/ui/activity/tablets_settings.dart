@@ -136,15 +136,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  settingsStep < 3 ? getNameEditor() : Container(),
-                  settingsStep == 2
-                      ? getDosageAndCountInput(context)
-                      : Container(),
-                  settingsStep == 3 ? getIntervalPicker() : Container(),
+                  if (settingsStep < 3) getNameEditor(),
+                  if (settingsStep == 2) getDosageAndCountInput(context),
+                  if (settingsStep == 3) getIntervalPicker(),
                 ],
               ),
             ),
-            settingsStep == 1 ? getActiveCourses() : Container(),
+            if (settingsStep == 1) getActiveCourses(),
           ],
         ),
       ),
@@ -466,25 +464,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: mainTextStyle.copyWith(fontSize: 15.0),
                   textAlign: TextAlign.center),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(3, (index) {
-                return InkWell(
-                  child: Container(
-                    height: 40.0,
-                    width: double.infinity,
-                    child: Center(
-                      child: Text('${index + 1} раза в день',
-                          style: mainTextStyle, textAlign: TextAlign.center),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    setState(() => countOfIntakes = index + 1);
-                  },
-                );
-              }),
-            ),
+            ...List.generate(
+                3,
+                (index) => InkWell(
+                      child: Container(
+                        height: 40.0,
+                        width: double.infinity,
+                        child: Center(
+                          child: Text('${index + 1} раза в день',
+                              style: mainTextStyle,
+                              textAlign: TextAlign.center),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        setState(() => countOfIntakes = index + 1);
+                      },
+                    )),
           ],
         ));
   }
@@ -504,26 +500,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: mainTextStyle.copyWith(fontSize: 15.0),
                       textAlign: TextAlign.center),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: List.generate(5, (index) {
-                    return InkWell(
-                      child: Container(
-                        height: 35.0,
-                        width: double.infinity,
-                        child: Center(
-                          child: Text('${index + 1}',
-                              style: mainTextStyle,
-                              textAlign: TextAlign.center),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        setState(() => dosage = index + 1);
-                      },
-                    );
-                  }),
-                ),
+                ...List.generate(
+                    5,
+                    (index) => InkWell(
+                          child: Container(
+                            height: 35.0,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text('${index + 1}',
+                                  style: mainTextStyle,
+                                  textAlign: TextAlign.center),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            setState(() => dosage = index + 1);
+                          },
+                        )),
               ],
             ));
   }
