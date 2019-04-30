@@ -31,7 +31,8 @@ class DateInterval {
   /// Check is 'this' [DateInterval] contains [other] date
   bool isContainsDate(DateTime other) {
     if (startDate.isBefore(other) && endDate.isAfter(other) ||
-        startDate == other)
+        startDate == other ||
+        endDate == other)
       return true;
     else
       return false;
