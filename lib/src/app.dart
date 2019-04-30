@@ -56,6 +56,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
+    super.initState();
     bloc = MenuBloc();
     bloc.dispatch(EventMenuStarted());
   }
