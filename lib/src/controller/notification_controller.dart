@@ -92,9 +92,12 @@ class NotificationController {
   /// Evening time: 7PM
   ///
   /// Notification will be planned since [interval.startDate] to [interval.endDate]
+  /// [today] variable needs to check is this 'update' action and no need
+  /// to schedule all interval
   Future<void> scheduleTabletsNotification(
-      DateInterval interval, TabletsIntake tablets) async {
+      DateInterval interval, TabletsIntake tablets, DateTime today) async {
     var startDate = interval.startDate;
+    if (today != null) startDate = DateTime(today.year, today.month, today.day);
 
     var android = AndroidNotificationDetails(
       'Water notification ID',
