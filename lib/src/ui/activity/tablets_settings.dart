@@ -91,31 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 Text('Настройки таблеток', style: appBarStyle),
                 InkWell(
-                  onTap: () => setState(() {
-                        if (settingsStep == 1 &&
-                            _formKey.currentState.validate())
-                          ++settingsStep;
-                        else if (settingsStep == 2 &&
-                            _formKey.currentState.validate())
-                          ++settingsStep;
-                        else if (settingsStep == 3 &&
-                            _formKey.currentState.validate()) {
-                          /// Add new tablet to list
-                          store.dispatch(AddOrUpdateTabletsDataAction(
-                            interval: DateInterval(
-                                startDate: startDate, endDate: endDate),
-                            tablet: TabletsIntake(
-                                name: nameController.text,
-                                countOfIntakes: countOfIntakes,
-                                dosage: dosage),
-                          ));
-
-                          Navigator.of(context).pop();
-                          showDialog(
-                              context: context,
-                              builder: (context) => getSuccessDialog());
-                        }
-                      }),
+                  onTap: nextStepFunc,
                   child: Text(settingsStep == 3 ? 'Добавить' : 'Дальше',
                       style: appBarStyle),
                 ),
@@ -522,14 +498,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Return dialog where displays success result picture
-  Widget getSuccessDialog() {
+  Widget getSuccessDialog(String text) {
     return SimpleDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       elevation: 5.0,
       contentPadding: EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 48.0),
       titlePadding: EdgeInsets.fromLTRB(24.0, 48.0, 24.0, 0.0),
       title: Text(
-        'Успешно\nдобавлено!',
+        text,
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 25.0,
@@ -546,12 +522,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ],
     );
-//    return Dialog(
-//      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-//      elevation: 5.0,
-//      child: ,
-//    );
   }
+
+  /// Set up next variable
+  void nextStepFunc() => setState(() {
+        // Go to second step if name of tablet is correct
+        if (settingsStep == 1 && _formKey.currentState.validate())
+          ++settingsStep;
+        // Go to third step if goal and dosage is correct
+        else if (settingsStep == 2 &&
+            _formKey.currentState.validate() &&
+            !isEditing)
+          ++settingsStep;
+        // It there is editing mode then just update existing tablet
+        else if (settingsStep == 2 &&
+            _formKey.currentState.validate() &&
+            isEditing) {
+          store.dispatch(AddOrUpdateTabletsDataAction(
+              interval: null,
+              tablet: TabletsIntake(
+                  name: nameController.text,
+                  countOfIntakes: countOfIntakes,
+                  dosage: dosage)));
+          Navigator.of(context).pop();
+          showDialog(
+              context: context,
+              builder: (context) => getSuccessDialog('Успешно\nобновлено!'));
+        }
+        // If this is creating of new tablet, then do it
+        else if (settingsStep == 3 && _formKey.currentState.validate()) {
+          /// Add new tablet to list
+          store.dispatch(AddOrUpdateTabletsDataAction(
+            interval: DateInterval(startDate: startDate, endDate: endDate),
+            tablet: TabletsIntake(
+                name: nameController.text,
+                countOfIntakes: countOfIntakes,
+                dosage: dosage),
+          ));
+
+          Navigator.of(context).pop();
+          showDialog(
+              context: context,
+              builder: (context) => getSuccessDialog('Успешно\nдобавлено!'));
+        }
+      });
 
   var dateStyle = DatePickerTheme(
     doneStyle: TextStyle(
