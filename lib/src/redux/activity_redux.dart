@@ -331,7 +331,6 @@ void tabletsActionMiddleware(
     var tablets = store.state.currentActivityController.tablets;
     DateInterval interval;
     bool changed = false;
-    var today;
     // If tablets are equals then update data
     // Two tablets are equals if their names are equals
     tablets.forEach((date, tablet) {
@@ -339,7 +338,6 @@ void tabletsActionMiddleware(
         tablets[date] = newTablet;
         changed = true;
         interval = date;
-        today = DateTime.now();
       }
     });
 
@@ -351,7 +349,7 @@ void tabletsActionMiddleware(
 
     /// Set up notification for that tablet
     NotificationController.getInstance()
-        .scheduleTabletsNotification(interval, newTablet, today);
+        .scheduleTabletsNotification(interval, newTablet);
 
     /// If date of [DayActivityController] inside of interval then
     /// update it's tablets data and action
