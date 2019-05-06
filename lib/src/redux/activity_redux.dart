@@ -123,20 +123,6 @@ ActivityState activityReducer(ActivityState state, action) {
           action.dayController ?? state.dayActivityController,
     );
 
-  /// Update [DayActivityController] depends on new instance of [action.water]
-  if (action is ChangeCompletedWaterAction) {
-    //If it's modified water then update state
-    if (action.water != null)
-      return ActivityState(
-        currentActivityController: state.currentActivityController,
-        dayActivityController: DayActivityController(
-          state.dayActivityController.todaysDate,
-          water: action.water,
-          tablets: state.dayActivityController.tabletsIntake,
-        ),
-      );
-  }
-
   /// Update instance of tablet in list by provided [action.index]
   /// This index indicate previous instance of tablet in list that need update
   if (action is ChangeCompletedTabletsAction) {
@@ -193,10 +179,13 @@ void waterActionMiddleware(
             : prev.waterIntake.completed - 1,
       );
 
-      ///Update action to send [water] to UI
-      action = ChangeCompletedWaterAction(
+      ///Update action to send updated [DayActivityController]
+      action = UpdateControllersAction(
+          dayController: DayActivityController(
+        prev.todaysDate,
         water: water,
-      );
+        tablets: prev.tabletsIntake,
+      ));
 
       IntakeDBProvider.db
           .updateWaterIntake(
