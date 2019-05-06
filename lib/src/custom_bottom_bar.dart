@@ -4,7 +4,7 @@ class MyFitAppBarItem {
   final String icon;
   final String title;
 
-  MyFitAppBarItem({this.icon, this.title});
+  const MyFitAppBarItem({this.icon, this.title});
 }
 
 class MyFitAppBar extends StatefulWidget {

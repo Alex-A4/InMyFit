@@ -20,7 +20,7 @@ class _AppState extends State<App> {
   MenuBloc bloc;
 
   //List of events which will be send to bloc when bottom bar tapped
-  List<MenuEvent> _events = [
+  final List<MenuEvent> _events = [
     EventActivityLog(),
     EventGuides(),
     EventMyFit(),
@@ -31,24 +31,24 @@ class _AppState extends State<App> {
   int barIndex = 0;
 
   //List of bottom bar items
-  List<MyFitAppBarItem> _items = [
-    MyFitAppBarItem(
+  final List<MyFitAppBarItem> _items = [
+    const MyFitAppBarItem(
       icon: 'assets/bottomBar/activity.png',
       title: 'ActivityLog',
     ),
-    MyFitAppBarItem(
+    const MyFitAppBarItem(
       icon: 'assets/bottomBar/guide.png',
       title: 'Guides',
     ),
-    MyFitAppBarItem(
+    const MyFitAppBarItem(
       icon: 'assets/bottomBar/myfit.png',
       title: 'MyFit',
     ),
-    MyFitAppBarItem(
+    const MyFitAppBarItem(
       icon: 'assets/bottomBar/shop.png',
       title: 'Shop',
     ),
-    MyFitAppBarItem(
+    const MyFitAppBarItem(
       icon: 'assets/bottomBar/profile.png',
       title: 'Profile',
     ),
