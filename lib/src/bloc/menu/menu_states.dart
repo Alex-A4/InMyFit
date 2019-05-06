@@ -10,12 +10,7 @@ class StateMenuStarted extends MenuState {
 }
 
 /// ActivityLog state
-/// Contains store from for fast access to that
 class StateActivityLog extends MenuState {
-  final Store store;
-
-  StateActivityLog(this.store);
-
   @override
   String toString() => 'StateActivityLog';
 }

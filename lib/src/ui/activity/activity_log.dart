@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inmyfit/main.dart';
+import 'package:inmyfit/src/bloc/menu/menu.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
 import 'package:inmyfit/src/ui/activity/edge_clipper.dart';
@@ -10,12 +12,13 @@ import 'package:redux/src/store.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class ActivityLog extends StatelessWidget {
-  final Store<ActivityState> store;
-
-  ActivityLog({Key key, this.store}) : super(key: key);
+  const ActivityLog({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final Store<ActivityState> store =
+        BlocProvider.of<MenuBloc>(context).activityStore;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: Builder(
