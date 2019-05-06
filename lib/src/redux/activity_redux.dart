@@ -34,11 +34,13 @@ class FetchDataAction {
   FetchDataAction(this.date);
 }
 
-/// Action that needs to updated controller for selected day
-class FetchDataSuccessAction {
-  final DayActivityController controller;
+/// Action to send updated controllers to reducer
+/// This action will be sent from one of middleware to reducer
+class UpdateControllersAction {
+  final DayActivityController dayController;
+  final CurrentActivityController controller;
 
-  FetchDataSuccessAction(this.controller);
+  UpdateControllersAction({this.dayController, this.controller});
 }
 
 /// Action that needs to change count of completed vessels
@@ -70,13 +72,7 @@ class UpdateCurrentControllerWater {
   final WaterIntakeType type;
   final int goalToIntake;
 
-  /// This variable creates in middlewater and needs to update state in reducer
-  /// [controller] is instance where updates water data
-  final CurrentActivityController controller;
-  final DayActivityController dayController;
-
-  UpdateCurrentControllerWater(
-      {this.type, this.goalToIntake, this.controller, this.dayController});
+  UpdateCurrentControllerWater({this.type, this.goalToIntake});
 }
 
 /// Action to update old or add new [TabletsIntake] to [CurrentActivityController]
@@ -88,11 +84,7 @@ class AddOrUpdateTabletsDataAction {
   // If need to add new instance then [interval] must not be null
   final DateInterval interval;
 
-  // This controller will be send to reducer from middleware
-  final DayActivityController dayController;
-
-  AddOrUpdateTabletsDataAction(
-      {this.tablet, this.interval, this.dayController});
+  AddOrUpdateTabletsDataAction({this.tablet, this.interval});
 }
 
 /// Action to delete [TabletsIntake] from [CurrentActivityController]
@@ -100,10 +92,7 @@ class DeleteTabletsAction {
   /// Tablet that need to delete
   final TabletsIntake tablet;
 
-  /// Controller that will be send from middleware to reducer after converting
-  final CurrentActivityController controller;
-
-  DeleteTabletsAction({this.tablet, this.controller});
+  DeleteTabletsAction({this.tablet});
 }
 
 ///
@@ -125,13 +114,13 @@ ActivityState activityReducer(ActivityState state, action) {
       isFetching: true,
     );
 
-  ///Stop fetching and show data
-  if (action is FetchDataSuccessAction)
+  // Update both actions if needed
+  if (action is UpdateControllersAction)
     return ActivityState(
-      currentActivityController: state.currentActivityController,
-      dayActivityController: action.controller,
-      //Stop fetching and hide spinner
-      isFetching: false,
+      currentActivityController:
+          action.controller ?? state.currentActivityController,
+      dayActivityController:
+          action.dayController ?? state.dayActivityController,
     );
 
   /// Update [DayActivityController] depends on new instance of [action.water]
@@ -164,40 +153,6 @@ ActivityState activityReducer(ActivityState state, action) {
       );
     }
   }
-
-  /// This action must provide [CurrentActivityController] to update state
-  if (action is UpdateCurrentControllerWater) {
-    if (action.controller != null) {
-      return ActivityState(
-        currentActivityController: action.controller,
-        dayActivityController: action.dayController,
-      );
-    }
-  }
-
-  /// This action must provide [DayActivityController] to update state with
-  /// updated data
-  if (action is AddOrUpdateTabletsDataAction) {
-    if (action.dayController != null)
-      return ActivityState(
-        currentActivityController: state.currentActivityController,
-        dayActivityController: action.dayController,
-      );
-  }
-
-  /// This action must provide [CurrentActivityController] to update state with
-  /// deleted tablets
-  if (action is DeleteTabletsAction) {
-    if (action.controller != null) {
-      var dayController = checkAndMergeDayAndCurrentActivities(
-          state.dayActivityController, action.controller);
-      return ActivityState(
-        currentActivityController: action.controller,
-        dayActivityController: dayController,
-      );
-    }
-  }
-
   //Return previous state if unknown action
   return state;
 }
@@ -244,7 +199,9 @@ void waterActionMiddleware(
       );
       controller = checkAndMergeDayAndCurrentActivities(
           controller, store.state.currentActivityController);
-      store.dispatch(FetchDataSuccessAction(controller));
+      store.dispatch(UpdateControllersAction(
+        dayController: controller,
+      ));
     });
   }
 
@@ -298,7 +255,7 @@ void waterActionMiddleware(
         dayController.todaysDate, dayController.waterIntake, controller);
 
     // Update action to send it next in reducer
-    action = UpdateCurrentControllerWater(
+    action = UpdateControllersAction(
       controller: controller,
       dayController: DayActivityController(dayController.todaysDate,
           water: waterDay, tablets: dayController.tabletsIntake),
@@ -358,7 +315,7 @@ void tabletsActionMiddleware(
         store.state.dayActivityController,
         store.state.currentActivityController,
       );
-      action = AddOrUpdateTabletsDataAction(dayController: dayController);
+      action = UpdateControllersAction(dayController: dayController);
     }
     // Save data to local
     store.state.currentActivityController.saveToLocal();
@@ -418,7 +375,7 @@ void tabletsActionMiddleware(
     /// Update controller and send it to reducer
     var controller = CurrentActivityController(
         store.state.currentActivityController.water, tablets);
-    action = DeleteTabletsAction(controller: controller);
+    action = UpdateControllersAction(controller: controller);
 
     /// Save updated data
     controller.saveToLocal();
