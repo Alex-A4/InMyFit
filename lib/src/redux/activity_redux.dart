@@ -173,12 +173,9 @@ void waterActionMiddleware(
     var date = DayActivityController.getPrimitiveDate(action.date);
 
     //Read info from db
-    readDayIntakes(date, store.state.currentActivityController)
-        .then((dayController) {
-      dayController = checkAndMergeDayAndCurrentActivities(
-          dayController, store.state.currentActivityController);
-      store.dispatch(UpdateControllersAction(dayController: dayController));
-    });
+    readDayIntakes(date, store.state.currentActivityController).then(
+        (dayController) => store
+            .dispatch(UpdateControllersAction(dayController: dayController)));
   }
 
   /// Update DB instance and update UI
@@ -416,7 +413,8 @@ Future<DayActivityController> readDayIntakes(
   var water = intakes[1] ?? WaterIntake.initOnBasic(controller.water);
   water = fixWaterByDate(date, water, controller);
 
-  return DayActivityController(date, tablets: tablets, water: water);
+  return checkAndMergeDayAndCurrentActivities(
+      DayActivityController(date, tablets: tablets, water: water), controller);
 }
 
 /// Check is [currentController] contains some information about tablets
