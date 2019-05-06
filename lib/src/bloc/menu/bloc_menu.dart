@@ -17,10 +17,10 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   Stream<MenuState> mapEventToState(MenuEvent event) async* {
     if (event is EventMenuStarted) {
       await initializeActivity();
-      yield StateActivityLog(activityStore);
+      yield StateActivityLog();
     }
 
-    if (event is EventActivityLog) yield StateActivityLog(activityStore);
+    if (event is EventActivityLog) yield StateActivityLog();
 
     if (event is EventGuides) yield StateGuides();
 
@@ -32,7 +32,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   }
 
   /// Initialize activity store by reading all from DB and cache
-  void initializeActivity() async {
+  Future<void> initializeActivity() async {
     var date = DayActivityController.getPrimitiveDate(DateTime.now());
 
     ///Initialize controllers for ActivityRedux
