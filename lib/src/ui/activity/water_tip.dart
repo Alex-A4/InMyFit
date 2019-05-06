@@ -4,7 +4,7 @@ import 'package:inmyfit/src/controller/watertip_controller.dart';
 
 /// Widget with some information about water
 class WaterTipWidget extends StatefulWidget {
-  WaterTipWidget({Key key}) : super(key: key);
+  const WaterTipWidget({Key key}) : super(key: key);
 
   @override
   _WaterTipWidgetState createState() => _WaterTipWidgetState();
@@ -17,7 +17,7 @@ class _WaterTipWidgetState extends State<WaterTipWidget> {
   @override
   void initState() {
     super.initState();
-    _currentTip = _waterTipController.getFirstTip();
+    _currentTip = _waterTipController.initTip();
   }
 
   @override

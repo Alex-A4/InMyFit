@@ -30,7 +30,7 @@ class ActivityLog extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     CalendarWidget(key: Key('Calendar')),
-                    WaterTipWidget(key: Key('WaterTip')),
+                    const WaterTipWidget(key: Key('WaterTip')),
                     WaterReminder(key: Key('WaterReminder')),
                     getSpacer(context),
                     TabletsReminder(key: Key('TabletsReminder')),

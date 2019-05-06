@@ -3,7 +3,7 @@ import 'dart:math';
 /// Controller that describes water tips.
 /// That contains list of tips and method to get next tip
 class WaterTipController {
-  List<WaterTip> _tips = [
+  final List<WaterTip> _tips = [
     WaterTip('Пока мы спим, потребление жидкости прекращается, однако она продолжает расходоваться'
         'При пробуждении, вода будет поддерживать водный баланс и приводить ваше тело "в действие".', 1),
     WaterTip('Когда ваше тело обезвожено, обмен веществ замедляется. Это нарушение '
@@ -27,7 +27,7 @@ class WaterTipController {
   }
 
   //Get the random tip from 0 to 5 inclusive both
-  WaterTip getFirstTip() {
+  WaterTip initTip() {
     currentTipIndex = Random().nextInt(6);
     return _tips[currentTipIndex];
   }
