@@ -37,26 +37,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
     ///Initialize controllers for ActivityRedux
     var currentController = await CurrentActivityController.restoreFromCache();
-    var intakes = await readDayIntakes(date);
-
-    /// Initialize tablets
-    var tablets = intakes[0];
-    if (tablets.isEmpty) {
-      currentController.tablets.forEach((interval, tablet) {
-        if (interval.isContainsDate(DateTime.now()))
-          tablets.add(TabletsIntake.initOnBasic(tablet));
-      });
-    }
-
-    /// Initialize water
-    if (intakes[1] == null)
-      intakes[1] = WaterIntake.initOnBasic(currentController.water);
-
-    var dayController = DayActivityController(
-      date,
-      tablets: tablets,
-      water: intakes[1],
-    );
+    var dayController = await readDayIntakes(date, currentController);
     dayController =
         checkAndMergeDayAndCurrentActivities(dayController, currentController);
 

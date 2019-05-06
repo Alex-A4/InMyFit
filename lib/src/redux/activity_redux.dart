@@ -173,35 +173,11 @@ void waterActionMiddleware(
     var date = DayActivityController.getPrimitiveDate(action.date);
 
     //Read info from db
-    readDayIntakes(date).then((list) {
-      //If instance of water does not exist then create new based on basic
-      var water = list[1] ??
-          WaterIntake.initOnBasic(store.state.currentActivityController.water);
-
-      /// If [date] is today's then check water data for correctness with [CurrentActivityController.water]
-      /// If data is not correct then update it
-      water =
-          fixWaterByDate(date, water, store.state.currentActivityController);
-
-      // If list of tablets from DB is empty then try to create new based on basic
-      var tablets = list[0];
-      if (tablets.isEmpty) {
-        store.state.currentActivityController.tablets
-            .forEach((interval, tablet) {
-          if (interval.isContainsDate(DateTime.now()))
-            tablets.add(TabletsIntake.initOnBasic(tablet));
-        });
-      }
-      var controller = DayActivityController(
-        date,
-        tablets: tablets,
-        water: water,
-      );
-      controller = checkAndMergeDayAndCurrentActivities(
-          controller, store.state.currentActivityController);
-      store.dispatch(UpdateControllersAction(
-        dayController: controller,
-      ));
+    readDayIntakes(date, store.state.currentActivityController)
+        .then((dayController) {
+      dayController = checkAndMergeDayAndCurrentActivities(
+          dayController, store.state.currentActivityController);
+      store.dispatch(UpdateControllersAction(dayController: dayController));
     });
   }
 
@@ -417,12 +393,30 @@ WaterIntake fixWaterByDate(
 }
 
 /// Read data about intakes from DB by specified [date], that must be primitive
-Future readDayIntakes(DateTime date) async {
+/// This method returns [DayActivityController]
+Future<DayActivityController> readDayIntakes(
+    DateTime date, CurrentActivityController controller) async {
   IntakeDBProvider db = IntakeDBProvider.db;
-  List list =
+  // Read tablets and water
+  List intakes =
       await Future.wait([db.getTabletsByDate(date), db.getWaterByDate(date)])
           .catchError((error) => print(error));
-  return list;
+
+  /// Initialize tablets
+  var tablets = intakes[0];
+  if (tablets.isEmpty) {
+    controller.tablets.forEach((interval, tablet) {
+      if (interval.isContainsDate(DateTime.now()))
+        tablets.add(TabletsIntake.initOnBasic(tablet));
+    });
+  }
+
+  /// If instance of water does not exist then create new based on basic
+  /// and then check for correctness with controller data
+  var water = intakes[1] ?? WaterIntake.initOnBasic(controller.water);
+  water = fixWaterByDate(date, water, controller);
+
+  return DayActivityController(date, tablets: tablets, water: water);
 }
 
 /// Check is [currentController] contains some information about tablets
