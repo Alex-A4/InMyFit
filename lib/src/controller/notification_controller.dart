@@ -65,7 +65,6 @@ class NotificationController {
     for (int i = 0; i < 11; i++) {
       if (i < water.goalToIntake) {
         Time time = Time(startDate.hour, startDate.minute);
-        print('${time.toMap()}\n');
         await _notifications.showDailyAtTime(
             i,
             'Приём воды',
@@ -79,8 +78,6 @@ class NotificationController {
         await _notifications.cancel(i);
       }
     }
-
-    await _checkPending();
   }
 
   /// Schedule tablets notification
@@ -145,8 +142,6 @@ class NotificationController {
 
       startDate = startDate.add(Duration(days: 1));
     }
-
-    await _checkPending();
   }
 
   /// Get the time of morning intake (9AM) with specified [date]
