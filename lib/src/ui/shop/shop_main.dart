@@ -3,7 +3,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:inmyfit/main.dart';
 
 class Shop extends StatefulWidget {
-  Shop({Key key}) : super(key: key);
+  const Shop({Key key}) : super(key: key);
   @override
   _ShopState createState() => _ShopState();
 }

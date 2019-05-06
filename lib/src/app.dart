@@ -106,12 +106,12 @@ class _AppState extends State<App> {
     Widget body = Container();
 
     if (state is StateMenuStarted)
-      body = Center(child: CircularProgressIndicator());
+      body = Center(child: const CircularProgressIndicator());
     if (state is StateActivityLog) body = ActivityLog(store: state.store);
-    if (state is StateMyFit) body = MyFit();
-    if (state is StateGuides) body = Guides();
-    if (state is StateProfile) body = Profile();
-    if (state is StateShop) body = Shop();
+    if (state is StateMyFit) body = const MyFit();
+    if (state is StateGuides) body = const Guides();
+    if (state is StateProfile) body = const Profile();
+    if (state is StateShop) body = const Shop();
 
     return body;
   }

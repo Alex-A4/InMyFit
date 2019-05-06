@@ -3,7 +3,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:inmyfit/main.dart';
 
 class MyFit extends StatefulWidget {
-  MyFit({Key key}) : super(key: key);
+  const MyFit({Key key}) : super(key: key);
   @override
   _MyFitState createState() => _MyFitState();
 }
