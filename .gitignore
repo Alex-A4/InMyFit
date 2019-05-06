@@ -9,6 +9,12 @@
 .history
 .svn/
 
+android/app/.settings/
+android/app/.project
+android/.project
+android/.settings/
+android/app/.classpath
+
 # IntelliJ related
 *.iml
 *.ipr
