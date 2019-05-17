@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class EdgeClipper extends CustomClipper<Path> {
   /// If true then edges will be drown at the top of canvas
-  bool isTopEdge;
-  final double edgeHeight = 10.0;
-  final double edgeWidthHalf = 8.0;
+  final bool isTopEdge;
+  final double edgeHeight = 15.0;
+  final double edgeWidthHalf = 12.0;
 
-  EdgeClipper({this.isTopEdge});
+  EdgeClipper({this.isTopEdge = false});
 
   @override
   Path getClip(Size size) {
