@@ -5,7 +5,8 @@ class MineralIcon extends StatelessWidget {
   final String mineralText;
   final double size;
   final EdgeInsets margin;
-  const MineralIcon({Key key, this.mineralText, this.size = 60.0, this.margin})
+  const MineralIcon(
+      {Key key, @required this.mineralText, this.size = 60.0, this.margin})
       : assert(mineralText.length < 3,
             'Name of minerals must contain until 2 symbols'),
         super(key: key);
