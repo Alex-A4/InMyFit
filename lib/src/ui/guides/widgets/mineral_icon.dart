@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// This widget contains mineral name on gradient asset
 class MineralIcon extends StatelessWidget {
   final String mineralText;
   final double size;
