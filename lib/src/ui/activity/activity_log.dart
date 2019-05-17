@@ -4,10 +4,10 @@ import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/bloc/menu/menu.dart';
 import 'package:inmyfit/src/redux/activity_redux.dart';
 import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
-import 'package:inmyfit/src/ui/activity/edge_clipper.dart';
 import 'package:inmyfit/src/ui/activity/tablets_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_reminder.dart';
 import 'package:inmyfit/src/ui/activity/water_tip.dart';
+import 'package:inmyfit/src/ui/widgets/edge_clipper.dart';
 import 'package:redux/src/store.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
