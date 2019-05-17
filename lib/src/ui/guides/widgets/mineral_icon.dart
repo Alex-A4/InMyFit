@@ -13,7 +13,7 @@ class MineralIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin ?? const EdgeInsets.all(4.0),
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       width: size,
       height: size,
       child: Text(
