@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:inmyfit/src/controller/current_activity_controller.dart';
 import 'package:inmyfit/src/controller/day_activity_controller.dart';
+import 'package:inmyfit/src/controller/notification_controller.dart';
 import 'menu.dart';
 import 'package:redux/redux.dart';
 import '../../redux/activity_redux.dart';
@@ -36,6 +37,16 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     ///Initialize controllers for ActivityRedux
     var currentController = await CurrentActivityController.restoreFromCache();
     var dayController = await readDayIntakes(date, currentController);
+    
+    /// Check is notifications binded
+    /// If not, then bind them 
+    NotificationController notifications = NotificationController.getInstance();
+    if (!await notifications.isNotificationsBinded()) {
+      currentController.tablets.forEach((interval, tablet) =>
+          notifications.scheduleTabletsNotification(interval, tablet));
+      notifications.scheduleWaterNotification(currentController.water);
+    }
+    
     activityStore = Store<ActivityState>(
       activityReducer,
       initialState: ActivityState(
