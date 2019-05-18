@@ -37,16 +37,17 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     ///Initialize controllers for ActivityRedux
     var currentController = await CurrentActivityController.restoreFromCache();
     var dayController = await readDayIntakes(date, currentController);
-    
-    /// Check is notifications binded
-    /// If not, then bind them 
-    NotificationController notifications = NotificationController.getInstance();
-    if (!await notifications.isNotificationsBinded()) {
+
+    /// Check is notifications bounded
+    /// If not, then bind them
+    NotificationController notifications =
+        await NotificationController.getInstance();
+    if (!await notifications.isNotificationsBounded()) {
       currentController.tablets.forEach((interval, tablet) =>
           notifications.scheduleTabletsNotification(interval, tablet));
       notifications.scheduleWaterNotification(currentController.water);
     }
-    
+
     activityStore = Store<ActivityState>(
       activityReducer,
       initialState: ActivityState(

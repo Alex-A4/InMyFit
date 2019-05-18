@@ -208,7 +208,8 @@ void waterActionMiddleware(
     );
 
     /// Update notifications with new and old water instance
-    NotificationController.getInstance().scheduleWaterNotification(water);
+    var notif = await NotificationController.getInstance();
+    notif.scheduleWaterNotification(water);
 
     controller = CurrentActivityController(water, controller.tablets);
 
@@ -267,8 +268,8 @@ void tabletsActionMiddleware(
     }
 
     /// Set up notification for that tablet
-    NotificationController.getInstance()
-        .scheduleTabletsNotification(interval, newTablet);
+    var notif = await NotificationController.getInstance();
+    notif.scheduleTabletsNotification(interval, newTablet);
 
     /// If date of [DayActivityController] inside of interval then
     /// update it's tablets data and action
@@ -324,11 +325,12 @@ void tabletsActionMiddleware(
   if (action is DeleteTabletsAction) {
     /// Delete specified tablets
     var tablets = store.state.currentActivityController.tablets;
+    var notif = await NotificationController.getInstance();
+
     tablets.removeWhere((interval, tablet) {
       if (tablet == action.tablet) {
         /// Cancel notification of that tablet
-        NotificationController.getInstance()
-            .cancelTabletNotification(interval, tablet);
+        notif.cancelTabletNotification(interval, tablet);
         return true;
       }
       return false;
