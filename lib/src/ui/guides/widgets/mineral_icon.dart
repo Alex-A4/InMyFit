@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inmyfit/main.dart';
 
 /// This widget contains mineral name on gradient asset
 class MineralIcon extends StatelessWidget {
@@ -28,9 +29,14 @@ class MineralIcon extends StatelessWidget {
             fontWeight: FontWeight.bold),
       ),
       decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/guides/mineral_icon.png'),
-            fit: BoxFit.contain),
+        borderRadius: BorderRadius.circular(5.0),
+        gradient: LinearGradient(
+          colors: [theme.primaryColor, theme.primaryColorLight],
+          begin: FractionalOffset(0.4, 0.1),
+          end: FractionalOffset(0.95, 0.25),
+          stops: [0.0, 1.0],
+          tileMode: TileMode.clamp,
+        ),
       ),
     );
   }
