@@ -27,6 +27,7 @@ class ClippedTopInfo extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         width: double.infinity,
+        height: 170.0,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +61,7 @@ class ClippedTopInfo extends StatelessWidget {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(image),
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
                 isGrey ? Color(0x9F757575) : Colors.transparent,
                 BlendMode.color),
