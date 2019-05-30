@@ -1,7 +1,5 @@
-import 'package:equatable/equatable.dart';
-
 //Basic class that describes event of menu
-abstract class MenuEvent extends Equatable {}
+abstract class MenuEvent {}
 
 //MenuStarted event. This must be dispatched to initialize menu variables
 class EventMenuStarted extends MenuEvent {

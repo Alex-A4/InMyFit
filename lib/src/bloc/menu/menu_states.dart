@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:redux/redux.dart';
-
-abstract class MenuState extends Equatable {}
+abstract class MenuState {}
 
 //MenuStarted state, download helpful info
 class StateMenuStarted extends MenuState {
