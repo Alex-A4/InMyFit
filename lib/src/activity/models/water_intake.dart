@@ -32,17 +32,7 @@ class WaterIntake {
 
   ///Restore object from JSON
   factory WaterIntake.fromJSON(Map<String, dynamic> data) {
-    WaterIntakeType type;
-    switch (data['type']) {
-      case 1:
-        type = WaterIntakeType.Bottles;
-        break;
-
-      //i.e. glasses
-      default:
-        type = WaterIntakeType.Glasses;
-        break;
-    }
+    WaterIntakeType type = WaterIntakeType.values[data['type']];
 
     return WaterIntake(
       completed: data['completed'],
