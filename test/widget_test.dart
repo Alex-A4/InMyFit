@@ -1,7 +1,8 @@
-import 'package:inmyfit/src/controller/current_activity_controller.dart';
-import 'package:inmyfit/src/models/date_interval.dart';
-import 'package:inmyfit/src/models/tablet_intake.dart';
-import 'package:inmyfit/src/models/water_intake.dart';
+
+import 'package:inmyfit/src/activity/controller/current_activity_controller.dart';
+import 'package:inmyfit/src/activity/models/date_interval.dart';
+import 'package:inmyfit/src/activity/models/tablet_intake.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
 
 void main() {
   testWaterAndTabletIntakesConverting();

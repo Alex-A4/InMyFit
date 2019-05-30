@@ -1,5 +1,6 @@
-import 'package:inmyfit/src/models/tablet_intake.dart';
-import 'package:inmyfit/src/models/water_intake.dart';
+import 'package:inmyfit/src/activity/models/tablet_intake.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
+
 import '../controller/current_activity_controller.dart';
 
 /// This controller describes user activity per one day.

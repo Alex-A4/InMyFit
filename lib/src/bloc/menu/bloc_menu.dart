@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:inmyfit/src/controller/current_activity_controller.dart';
-import 'package:inmyfit/src/controller/day_activity_controller.dart';
-import 'package:inmyfit/src/controller/notification_controller.dart';
+import 'package:inmyfit/src/activity/controller/current_activity_controller.dart';
+import 'package:inmyfit/src/activity/controller/day_activity_controller.dart';
+import 'package:inmyfit/src/activity/controller/notification_controller.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
 import 'menu.dart';
 import 'package:redux/redux.dart';
-import '../../redux/activity_redux.dart';
 
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   Store<ActivityState> activityStore;

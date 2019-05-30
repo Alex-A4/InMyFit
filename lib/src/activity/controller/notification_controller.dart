@@ -3,9 +3,9 @@ import 'dart:convert' show JsonCodec;
 
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:inmyfit/src/models/date_interval.dart';
-import 'package:inmyfit/src/models/tablet_intake.dart';
-import 'package:inmyfit/src/models/water_intake.dart';
+import 'package:inmyfit/src/activity/models/date_interval.dart';
+import 'package:inmyfit/src/activity/models/tablet_intake.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
 
 final JsonCodec json = JsonCodec();
 final FlutterLocalNotificationsPlugin notifications =

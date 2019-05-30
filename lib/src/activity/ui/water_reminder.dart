@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:inmyfit/main.dart';
-import 'package:inmyfit/src/models/water_intake.dart';
-import 'package:inmyfit/src/redux/activity_redux.dart';
-import 'package:inmyfit/src/ui/activity/water_settings.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
+import 'package:inmyfit/src/activity/ui/water_settings.dart';
 
 class WaterReminder extends StatelessWidget {
   final _peopleHeight = 120.0;

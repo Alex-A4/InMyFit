@@ -3,11 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inmyfit/main.dart';
 import 'package:inmyfit/src/bloc/menu/menu.dart';
 import 'package:inmyfit/src/custom_bottom_bar.dart';
-import 'package:inmyfit/src/ui/activity/activity_log.dart';
-import 'package:inmyfit/src/ui/guides/guides_main.dart';
-import 'package:inmyfit/src/ui/myfit/myfit_main.dart';
-import 'package:inmyfit/src/ui/profile/profile_main.dart';
-import 'package:inmyfit/src/ui/shop/shop_main.dart';
+import 'package:inmyfit/src/guides/ui/guides_main.dart';
+import 'package:inmyfit/src/myfit/ui/myfit_main.dart';
+import 'package:inmyfit/src/profile/ui/profile_main.dart';
+import 'package:inmyfit/src/shop/ui/shop_main.dart';
+
+import 'activity/ui/activity_log.dart';
 
 class App extends StatefulWidget {
   App({Key key}) : super(key: key);

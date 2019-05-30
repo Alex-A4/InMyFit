@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
 import 'package:redux/redux.dart';
-import '../../models/water_intake.dart';
-import '../../redux/activity_redux.dart';
 
 class WaterSettingsRoute<T> extends PopupRoute<T> {
   final Store<ActivityState> store;

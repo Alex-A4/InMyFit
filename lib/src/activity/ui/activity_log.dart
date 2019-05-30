@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inmyfit/main.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
+import 'package:inmyfit/src/activity/ui/tablets_reminder.dart';
+import 'package:inmyfit/src/activity/ui/water_reminder.dart';
+import 'package:inmyfit/src/activity/ui/water_tip.dart';
 import 'package:inmyfit/src/bloc/menu/menu.dart';
-import 'package:inmyfit/src/redux/activity_redux.dart';
-import 'package:inmyfit/src/ui/activity/calendar_widget.dart';
-import 'package:inmyfit/src/ui/activity/tablets_reminder.dart';
-import 'package:inmyfit/src/ui/activity/water_reminder.dart';
-import 'package:inmyfit/src/ui/activity/water_tip.dart';
 import 'package:inmyfit/src/ui/widgets/edge_clipper.dart';
 import 'package:redux/src/store.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+
+import 'calendar_widget.dart';
 
 class ActivityLog extends StatelessWidget {
   const ActivityLog({Key key}) : super(key: key);

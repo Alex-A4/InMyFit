@@ -1,4 +1,5 @@
-import 'package:inmyfit/src/models/date_interval.dart';
+
+import 'package:inmyfit/src/activity/models/date_interval.dart';
 
 import '../models/tablet_intake.dart';
 import '../models/water_intake.dart';

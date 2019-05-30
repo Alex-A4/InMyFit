@@ -1,8 +1,10 @@
-import 'package:inmyfit/src/controller/notification_controller.dart';
-import 'package:inmyfit/src/database/intake_db_provider.dart';
-import 'package:inmyfit/src/models/date_interval.dart';
-import 'package:inmyfit/src/models/water_intake.dart';
-import 'package:inmyfit/src/models/tablet_intake.dart';
+
+
+import 'package:inmyfit/src/activity/controller/notification_controller.dart';
+import 'package:inmyfit/src/activity/database/intake_db_provider.dart';
+import 'package:inmyfit/src/activity/models/date_interval.dart';
+import 'package:inmyfit/src/activity/models/tablet_intake.dart';
+import 'package:inmyfit/src/activity/models/water_intake.dart';
 
 import '../controller/day_activity_controller.dart';
 import '../controller/current_activity_controller.dart';

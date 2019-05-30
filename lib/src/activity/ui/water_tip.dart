@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inmyfit/src/controller/watertip_controller.dart';
+import 'package:inmyfit/src/activity/controller/watertip_controller.dart';
 
 
 /// Widget with some information about water

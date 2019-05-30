@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:inmyfit/main.dart';
-import 'package:inmyfit/src/redux/activity_redux.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 

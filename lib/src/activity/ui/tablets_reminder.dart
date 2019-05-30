@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:inmyfit/src/ui/activity/tablets_settings.dart';
+import 'package:inmyfit/src/activity/models/tablet_intake.dart';
+import 'package:inmyfit/src/activity/redux/activity_redux.dart';
+import 'package:inmyfit/src/activity/ui/tablets_settings.dart';
 import 'package:redux/redux.dart';
-import '../../redux/activity_redux.dart';
 import 'package:expandable/expandable.dart';
-import '../../models/tablet_intake.dart';
 import '../../../main.dart';
 
 class TabletsReminder extends StatelessWidget {
