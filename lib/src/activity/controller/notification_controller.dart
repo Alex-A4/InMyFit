@@ -47,6 +47,28 @@ class NotificationController {
     return response.length != 0;
   }
 
+  /// Verify notifications of tablet and cancel it if needs
+  Future<void> verifyTablet(TabletsIntake tablet, DateInterval interval) async {
+    var today = DateTime.now();
+    if (today.isBefore(interval.startDate) || today.isAfter(interval.endDate)) {
+      var id = (interval.hashCode + tablet.hashCode) % 2147483643;
+      var response = await notifications.pendingNotificationRequests();
+
+      for (var notification in response) {
+        if (notification.id == id + 1 ||
+            notification.id == id + 2 ||
+            notification.id == id + 3) {
+          await notifications.cancel(notification.id);
+        }
+      }
+    }
+  }
+
+  /// Cancel all notifications, uses for debugging
+  Future<void> cancelAll() async {
+    await notifications.cancelAll();
+  }
+
   /// Schedule water notifications in separate isolate
   ///
   /// This function must be call instead of [scheduleWater]
@@ -153,12 +175,7 @@ Future<void> scheduleTablets(String data) async {
   DateInterval interval = DateInterval.fromJSON(mapData['interval']);
   TabletsIntake tablets = TabletsIntake.fromJSON(mapData['tablet']);
 
-  var startDate = interval.startDate;
   var today = DateTime.now();
-
-  // If today is inside interval
-  if (startDate.isBefore(today))
-    startDate = DateTime(today.year, today.month, today.day);
 
   var android = AndroidNotificationDetails(
     'Water notification ID',
@@ -169,52 +186,40 @@ Future<void> scheduleTablets(String data) async {
   var ios = IOSNotificationDetails();
 
   /// Add notification schedule for each day in interval
-  while (startDate.isBefore(interval.endDate) ||
-      startDate.compareTo(interval.endDate) == 0) {
-    var id = (startDate.hashCode + tablets.hashCode) % 2147483643;
-
+  if (today.isBefore(interval.endDate) && today.isAfter(interval.startDate)) {
+    var id = (interval.hashCode + tablets.hashCode) % 2147483643;
     // Morning
-    if (tablets.countOfIntakes >= 1)
-      await notifications.schedule(
+    if (tablets.countOfIntakes >= 1) {
+      await notifications.showDailyAtTime(
           id + 1,
           'Приём таблеток',
           'Пожалуйста, примите ${tablets.name} и отметьте это в приложении',
-          getMorningIntakeTime(startDate),
+          Time(9),
           NotificationDetails(android, ios));
+    }
 
     // Evening
-    if (tablets.countOfIntakes >= 2)
-      await notifications.schedule(
+    if (tablets.countOfIntakes >= 2) {
+      await notifications.showDailyAtTime(
           id + 2,
           'Приём таблеток',
           'Пожалуйста, примите ${tablets.name} и отметьте это в приложении',
-          getEveningIntakeTime(startDate),
+          Time(19),
           NotificationDetails(android, ios));
+    }
 
     // Afternoon
-    if (tablets.countOfIntakes == 3)
-      await notifications.schedule(
+    if (tablets.countOfIntakes >= 3) {
+      await notifications.showDailyAtTime(
           id + 3,
           'Приём таблеток',
           'Пожалуйста, примите ${tablets.name} и отметьте это в приложении',
-          getNoonIntakeTime(startDate),
+          Time(14),
           NotificationDetails(android, ios));
-
-    startDate = startDate.add(Duration(days: 1));
+    }
   }
 }
 
-/// Get the time of morning intake (9AM) with specified [date]
-DateTime getMorningIntakeTime(DateTime date) =>
-    DateTime(date.year, date.month, date.day, 9, 0);
-
-/// Get the time of afternoon intake (14PM) with specified [date]
-DateTime getNoonIntakeTime(DateTime date) =>
-    DateTime(date.year, date.month, date.day, 14, 0);
-
-/// Get the time of evening intake (19PM) with specified [date]
-DateTime getEveningIntakeTime(DateTime date) =>
-    DateTime(date.year, date.month, date.day, 19, 0);
 
 /// Cancel all scheduled notification with [tablet] on [interval] since today
 ///
@@ -224,28 +229,10 @@ Future<void> cancelTablet(String data) async {
   DateInterval interval = DateInterval.fromJSON(mapData['interval']);
   TabletsIntake tablet = TabletsIntake.fromJSON(mapData['tablet']);
 
-  // Initialize notifications
-  var notifications = FlutterLocalNotificationsPlugin();
-  var androidSettings = AndroidInitializationSettings('app_icon');
-  var iosSettings = IOSInitializationSettings();
-
-  await notifications.initialize(
-    InitializationSettings(androidSettings, iosSettings),
-    onSelectNotification: (_) {},
-  );
-
-  var startDate = DateTime.now();
-  startDate = DateTime(startDate.year, startDate.month, startDate.day);
-
-  while (startDate.isBefore(interval.endDate) ||
-      startDate.compareTo(interval.endDate) == 0) {
-    var id = (startDate.hashCode + tablet.hashCode) % 2147483643;
-    await Future.wait([
-      notifications.cancel(id + 1),
-      notifications.cancel(id + 2),
-      notifications.cancel(id + 3)
-    ]);
-
-    startDate = startDate.add(Duration(days: 1));
-  }
+  var id = (interval.hashCode + tablet.hashCode) % 2147483643;
+  await Future.wait([
+    notifications.cancel(id + 1),
+    notifications.cancel(id + 2),
+    notifications.cancel(id + 3)
+  ]);
 }

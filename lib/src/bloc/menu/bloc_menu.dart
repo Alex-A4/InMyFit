@@ -42,10 +42,16 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     /// If not, then bind them
     NotificationController notifications =
         await NotificationController.getInstance();
+
+    // If there is no notifications, rebind them
+    // else verify is they must to be
     if (!await notifications.isNotificationsBounded()) {
       currentController.tablets.forEach((interval, tablet) =>
           notifications.scheduleTabletsNotification(interval, tablet));
       notifications.scheduleWaterNotification(currentController.water);
+    } else {
+      currentController.tablets.forEach((interval, tablet) async =>
+          await notifications.verifyTablet(tablet, interval));
     }
 
     activityStore = Store<ActivityState>(

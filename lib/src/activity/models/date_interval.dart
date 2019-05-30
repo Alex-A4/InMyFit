@@ -37,4 +37,7 @@ class DateInterval {
     else
       return false;
   }
+
+  @override
+  int get hashCode => startDate.hashCode + endDate.hashCode;
 }

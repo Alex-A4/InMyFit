@@ -29,7 +29,6 @@ dependencies:
   intl: ^0.15.7
   expandable: ^2.1.0+3
   flutter_datetime_picker: ^1.1.6
-  flutter_isolate: ^1.0.0+6
 
 
 dev_dependencies:
