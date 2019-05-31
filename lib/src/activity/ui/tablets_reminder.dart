@@ -198,7 +198,7 @@ class TabletsReminder extends StatelessWidget {
 
   Widget getCollapsedTabletInfo(TabletsIntake tablet, String dayTime) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Image.asset(
         'assets/tabletsReminder/${tablet.completed[dayTime] ? 'completed' : 'notCompleted'}.png',
         width: 45.0,
