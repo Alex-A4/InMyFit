@@ -15,16 +15,18 @@ class DateInterval {
   static DateTime getPrimitiveDate(DateTime date) =>
       DateTime(date.year, date.month, date.day);
 
-  ///Convert [DateInterval] to JSON object
+  ///Convert [DateInterval] to JSON string
   String toJSON() =>
-      '${startDate.toUtc().toString()}|${endDate.toUtc().toString()}';
+      '${startDate.millisecondsSinceEpoch}|${endDate.millisecondsSinceEpoch}';
 
   /// Restore [DateInterval] from JSON object
   factory DateInterval.fromJSON(String datePair) {
     List<String> dates = datePair.split('|');
     return DateInterval(
-      startDate: DateTime.parse(dates[0]),
-      endDate: DateTime.parse(dates[1]),
+      startDate: getPrimitiveDate(
+          DateTime.fromMillisecondsSinceEpoch(int.parse(dates[0]))),
+      endDate: getPrimitiveDate(
+          DateTime.fromMillisecondsSinceEpoch(int.parse(dates[1]))),
     );
   }
 
@@ -39,5 +41,7 @@ class DateInterval {
   }
 
   @override
-  int get hashCode => startDate.hashCode + endDate.hashCode;
+  int get hashCode =>
+      startDate.day * startDate.month * startDate.year +
+      endDate.day * endDate.month * endDate.year;
 }

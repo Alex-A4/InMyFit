@@ -165,7 +165,7 @@ class TabletsIntake {
   }
 
   @override
-  int get hashCode => name.hashCode * dosage;
+  int get hashCode => name.hashCode;
 
   @override
   String toString() =>

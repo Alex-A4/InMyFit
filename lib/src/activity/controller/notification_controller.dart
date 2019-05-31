@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert' show JsonCodec;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:inmyfit/src/activity/models/date_interval.dart';
 import 'package:inmyfit/src/activity/models/tablet_intake.dart';
 import 'package:inmyfit/src/activity/models/water_intake.dart';
 
-final JsonCodec json = JsonCodec();
 final FlutterLocalNotificationsPlugin notifications =
     FlutterLocalNotificationsPlugin();
 
@@ -43,6 +41,8 @@ class NotificationController {
   Future<bool> isNotificationsBounded() async {
     var response = await notifications.pendingNotificationRequests();
     print('COUNT OF NOTIFICATIONS:  ${response.length}');
+    response.forEach(
+        (notif) => print('Notification id: ${notif.id}, ${notif.title}'));
     return response.length != 0;
   }
 
@@ -52,7 +52,6 @@ class NotificationController {
     if (today.isBefore(interval.startDate) || today.isAfter(interval.endDate)) {
       var id = (interval.hashCode + tablet.hashCode) % 2147483643;
       var response = await notifications.pendingNotificationRequests();
-
       for (var notification in response) {
         if (notification.id == id + 1 ||
             notification.id == id + 2 ||
@@ -72,7 +71,7 @@ class NotificationController {
   ///
   /// This function must be call instead of [scheduleWater]
   Future<void> scheduleWaterNotification(WaterIntake water) async {
-    await _scheduleWater(json.encode(water.toJSON()));
+    await _scheduleWater(water);
   }
 
   /// Schedule tablets notification in separate isolate
@@ -80,8 +79,7 @@ class NotificationController {
   /// This function must be call instead of [scheduleTablets]
   Future<void> scheduleTabletsNotification(
       DateInterval interval, TabletsIntake tablets) async {
-    Map data = {"tablet": tablets.toJSON(), "interval": interval.toJSON()};
-    await _scheduleTablets(json.encode(data));
+    await _scheduleTablets(interval, tablets);
   }
 
   /// Cancel notifications in a separate isolate
@@ -89,8 +87,7 @@ class NotificationController {
   /// Do not call [cancelTablet], because of slow handling
   Future<void> cancelTabletNotification(
       DateInterval interval, TabletsIntake tablet) async {
-    Map data = {"interval": interval.toJSON(), "tablet": tablet.toJSON()};
-    await _cancelTablet(json.encode(data));
+    await _cancelTablet(interval, tablet);
   }
 }
 
@@ -111,9 +108,7 @@ class NotificationController {
 /// split on equals intervals since 9 AM to 7PM (11 hours)
 ///
 /// Notifications will be shown every day
-Future<void> _scheduleWater(String data) async {
-  WaterIntake water = WaterIntake.fromJSON(json.decode(data));
-
+Future<void> _scheduleWater(WaterIntake water) async {
   /// The time between each notification
   /// Split 11 hours (in minutes) on goal
   int timeSpace = 660 ~/ water.goalToIntake;
@@ -163,17 +158,14 @@ Future<void> _scheduleWater(String data) async {
 /// Notification will be planned since [interval.startDate] to [interval.endDate]
 /// [today] variable needs to check is this 'update' action and no need
 /// to schedule all interval
-Future<void> _scheduleTablets(String data) async {
-  Map mapData = json.decode(data);
-  DateInterval interval = DateInterval.fromJSON(mapData['interval']);
-  TabletsIntake tablets = TabletsIntake.fromJSON(mapData['tablet']);
-
+Future<void> _scheduleTablets(
+    DateInterval interval, TabletsIntake tablets) async {
   var today = DateTime.now();
 
   var android = AndroidNotificationDetails(
-    'Water notification ID',
-    'Water intake',
-    'Water intake',
+    'Tablets notification ID',
+    'Tablets intake',
+    'Tablets intake',
     icon: 'app_icon',
   );
   var ios = IOSNotificationDetails();
@@ -213,16 +205,12 @@ Future<void> _scheduleTablets(String data) async {
   }
 }
 
-
 /// Cancel all scheduled notification with [tablet] on [interval] since today
 ///
 /// Use [cancelTabletNotification] instead of that
-Future<void> _cancelTablet(String data) async {
-  Map mapData = json.decode(data);
-  DateInterval interval = DateInterval.fromJSON(mapData['interval']);
-  TabletsIntake tablet = TabletsIntake.fromJSON(mapData['tablet']);
-
+Future<void> _cancelTablet(DateInterval interval, TabletsIntake tablet) async {
   var id = (interval.hashCode + tablet.hashCode) % 2147483643;
+
   await Future.wait([
     notifications.cancel(id + 1),
     notifications.cancel(id + 2),
