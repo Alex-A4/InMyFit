@@ -49,16 +49,23 @@ class NotificationController {
   /// Verify notifications of tablet and cancel it if needs
   Future<void> verifyTablet(TabletsIntake tablet, DateInterval interval) async {
     var today = DateTime.now();
+
+    var id = (interval.hashCode + tablet.hashCode) % 2147483643;
+    var response = await notifications.pendingNotificationRequests();
+    // Choose notifications of current tablet
+    response = response
+        .where((notif) =>
+            notif.id == id + 1 || notif.id == id + 2 || notif.id == id + 3)
+        .toList();
+
     if (today.isBefore(interval.startDate) || today.isAfter(interval.endDate)) {
-      var id = (interval.hashCode + tablet.hashCode) % 2147483643;
-      var response = await notifications.pendingNotificationRequests();
       for (var notification in response) {
-        if (notification.id == id + 1 ||
-            notification.id == id + 2 ||
-            notification.id == id + 3) {
-          await notifications.cancel(notification.id);
-        }
+        await notifications.cancel(notification.id);
       }
+    } else {
+      // Schedule notification if they not
+      if (response.length == 0)
+        await scheduleTabletsNotification(interval, tablet);
     }
   }
 
