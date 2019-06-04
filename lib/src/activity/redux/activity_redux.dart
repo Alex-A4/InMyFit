@@ -1,5 +1,3 @@
-
-
 import 'package:inmyfit/src/activity/controller/notification_controller.dart';
 import 'package:inmyfit/src/activity/database/intake_db_provider.dart';
 import 'package:inmyfit/src/activity/models/date_interval.dart';
@@ -418,35 +416,41 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
     CurrentActivityController currentController) {
   List<TabletsIntake> newTablets = [];
 
-  currentController.tablets.forEach((date, tablet) {
-    /// Variable to check is tablet exist in dayController
-    bool isExist = false;
-    if (date.isContainsDate(dayController.todaysDate))
-      dayController.tabletsIntake.forEach((dayTablet) {
-        // If names of tablets is equals and data not equals then update data
-        // else if names equals then copy old data else create new instance
-        if (tablet == dayTablet && !isTabletsEquals(tablet, dayTablet)) {
-          newTablets.add(TabletsIntake(
-            dosage: tablet.dosage,
-            countOfIntakes: tablet.countOfIntakes,
-            name: tablet.name,
-            //Completed will be fixed in constructor
-            completed: dayTablet.completed,
-          ));
-          isExist = true;
-        }
-        //Copy data
-        else if (tablet == dayTablet) {
-          newTablets.add(dayTablet);
-          isExist = true;
-        }
-      });
-    //Create new instance if tablets was not exist and it is inside interval
-    if (!isExist && date.isContainsDate(dayController.todaysDate)) {
-      newTablets.add(TabletsIntake.initOnBasic(tablet));
-      isExist = true;
-    }
-  });
+  /// If the day of controller before today's then just return data from DB
+  /// else try to merge with [CurrentActivityController]
+  if (dayController.todaysDate.isBefore(DateTime.now())) {
+    newTablets = dayController.tabletsIntake;
+  } else {
+    currentController.tablets.forEach((date, tablet) {
+      /// Variable to check is tablet exist in dayController
+      bool isExist = false;
+      if (date.isContainsDate(dayController.todaysDate))
+        dayController.tabletsIntake.forEach((dayTablet) {
+          // If names of tablets is equals and data not equals then update data
+          // else if names equals then copy old data else create new instance
+          if (tablet == dayTablet && !isTabletsEquals(tablet, dayTablet)) {
+            newTablets.add(TabletsIntake(
+              dosage: tablet.dosage,
+              countOfIntakes: tablet.countOfIntakes,
+              name: tablet.name,
+              //Completed will be fixed in constructor
+              completed: dayTablet.completed,
+            ));
+            isExist = true;
+          }
+          //Copy data
+          else if (tablet == dayTablet) {
+            newTablets.add(dayTablet);
+            isExist = true;
+          }
+        });
+      //Create new instance if tablets was not exist and it is inside interval
+      if (!isExist && date.isContainsDate(dayController.todaysDate)) {
+        newTablets.add(TabletsIntake.initOnBasic(tablet));
+        isExist = true;
+      }
+    });
+  }
 
   return DayActivityController(
     dayController.todaysDate,
