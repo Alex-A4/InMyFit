@@ -170,9 +170,9 @@ Future<void> _scheduleTablets(
   var today = DateTime.now();
 
   var android = AndroidNotificationDetails(
-    'Tablets notification ID',
-    'Tablets intake',
-    'Tablets intake',
+    'Water notification ID',
+    'Water intake',
+    'Water intake',
     icon: 'app_icon',
   );
   var ios = IOSNotificationDetails();
