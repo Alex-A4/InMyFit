@@ -418,7 +418,8 @@ DayActivityController checkAndMergeDayAndCurrentActivities(
 
   /// If the day of controller before today's then just return data from DB
   /// else try to merge with [CurrentActivityController]
-  if (dayController.todaysDate.isBefore(DateTime.now())) {
+  if (dayController.todaysDate
+      .isBefore(DayActivityController.getPrimitiveDate(DateTime.now()))) {
     newTablets = dayController.tabletsIntake;
   } else {
     currentController.tablets.forEach((date, tablet) {
