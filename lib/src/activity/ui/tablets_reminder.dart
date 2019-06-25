@@ -180,24 +180,78 @@ class TabletsReminder extends StatelessWidget {
     var tablets = _store.state.dayActivityController.tabletsIntake
         .where((tablet) => tablet.completed.containsKey(dayTime));
 
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Divider(height: 1.0),
-          tablets.length > 0 ? SizedBox(height: 8.0) : Container(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: tablets
-                .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
-                .toList(),
-          ),
-        ],
-      ),
+    return Builder(
+      builder: (context) {
+        var collapsedWidgetWidth = 65.0;
+        var screenWidth = MediaQuery.of(context).size.width;
+
+        // Amount of widget that can put in a row
+        var capacity = screenWidth ~/ collapsedWidgetWidth;
+
+        // If there enough of place to put all tablets in a row, then do it
+        // else create expandable widget
+        if (capacity >= tablets.length) {
+          return Container(
+            child: Column(
+              children: <Widget>[
+                Divider(height: 1.0),
+                tablets.length > 0 ? SizedBox(height: 8.0) : Container(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: tablets
+                      .map((tablet) => getCollapsedTabletInfo(tablet, dayTime))
+                      .toList(),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return ExpandablePanel(
+            hasIcon: false,
+            tapHeaderToExpand: true,
+            tapBodyToCollapse: true,
+            collapsed: Column(
+              children: <Widget>[
+                Divider(height: 1.0),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ...tablets
+                        .take(capacity - 1)
+                        .map(
+                            (tablet) => getCollapsedTabletInfo(tablet, dayTime))
+                        .toList(),
+                    Icon(Icons.more_horiz, size: 30.0),
+                  ],
+                ),
+              ],
+            ),
+            expanded: Column(
+              children: <Widget>[
+                Divider(height: 1.0),
+                SizedBox(height: 8.0),
+                GridView.builder(
+                  primary: false,
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: capacity),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  itemCount: tablets.length,
+                  itemBuilder: (context, index) =>
+                      getCollapsedTabletInfo(tablets.elementAt(index), dayTime),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 
   Widget getCollapsedTabletInfo(TabletsIntake tablet, String dayTime) {
     return Container(
+      width: 55.0,
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Image.asset(
         'assets/tabletsReminder/${tablet.completed[dayTime] ? 'completed' : 'notCompleted'}.png',
